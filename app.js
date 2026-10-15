@@ -238,18 +238,21 @@
       // 시장 비중이 기준 미만이면 '개별 종목'으로 밝힌다(시스템 등급에는 주의로만 반영).
       const sh = t.circulating_usd ? a.mcap_usd / t.circulating_usd * 100 : null;
       const small = sysThr != null && sh != null && sh < sysThr;
-      sig.push({ sev: "breach", tab: "peg", target: "gauge", label: a.symbol,
-        html: `${bold(a.symbol)} ${esc(why)} <span class="sig-dim">· 발행잔액 $${esc(usd(a.mcap_usd))}`
+      sig.push({ sev: "breach", tab: "peg", target: "gauge", label: a.label || a.symbol,
+        html: `${bold(a.label || a.symbol)} ${esc(why)} <span class="sig-dim">· 발행잔액 $${esc(usd(a.mcap_usd))}`
           + (small ? ` · 비중 ${sh < 0.01 ? "0.01% 미만" : sh.toFixed(2) + "%"}, 개별 종목` : "") + "</span>" });
     });
     // 원천 값이 멈춘 종목 — 등급에서 무엇을 뺐는지 밝힌다.
     const stl = d.source_staleness || {};
     const stN = (stl.supply || []).length + (stl.price || []).length;
     if (stN) {
-      const names = [...(stl.supply || []), ...(stl.price || [])].map((x) => x.symbol)
-        .filter((v, i, arr) => arr.indexOf(v) === i).slice(0, 3).join(", ");
+      // 같은 종목이 발행량·가격 양쪽에 걸리면 한 번만 센다. 기호가 겹치는 다른 종목(예: AP USDA·Avalon USDa)은
+      // ETL 이 붙인 label(이름)로 구분한다 — 경보 종목과 멈춘 종목을 같은 것으로 읽지 않도록.
+      const uniq = [...(stl.supply || []), ...(stl.price || [])].map((x) => x.label || x.symbol)
+        .filter((v, i, arr) => arr.indexOf(v) === i);
+      const names = uniq.slice(0, 3).join(", ");
       sig.push({ sev: "info", tab: "issuance", target: "h-table", label: "원천 갱신 정지",
-        html: `원천 값이 멈춘 종목 ${bold(names)}${stN > 3 ? " 등" : ""} <span class="sig-dim">— 멈춘 발행량·48시간 넘은 가격은 증감률·등급에서 뺌</span>` });
+        html: `원천 값이 멈춘 종목 ${bold(names)}${uniq.length > 3 ? ` 등 ${uniq.length}종` : ""} <span class="sig-dim">— 멈춘 발행량·48시간 넘은 가격은 증감률·등급에서 뺌</span>` });
     }
     // 원천 목록에서 통째로 사라진 대형 종목 — 총 발행잔액이 줄어 보이는 이유를 밝힌다.
     const dr = d.source_dropped || {};
@@ -2129,6 +2132,14 @@
       return `${yr}${k.slice(5, 10)} ${k.slice(11, 13)}시`;
     };
     let limit = 12;
+    // 기호가 대소문자만 다르거나 같은 다른 종목(예: Falcon USDf·Astherus USDF)은 이름을 붙여 구분한다.
+    const ids = {};
+    [...(d.open || []), ...(d.closed || [])].forEach((e) => {
+      const k = String(e.symbol || "").toUpperCase();
+      (ids[k] = ids[k] || new Set()).add(String(e.id));
+    });
+    const dupName = (e) => (ids[String(e.symbol || "").toUpperCase()] || new Set()).size > 1 && e.name && e.name !== e.symbol;
+    const symOf = (e) => dupName(e) ? `${e.symbol}(${e.name})` : e.symbol;
     const dur = (h) => h == null ? "—" : h >= 48 ? (h / 24).toFixed(1) + "일" : h + "시간";
     const draw = () => {
       const all = btn.getAttribute("aria-pressed") === "true";
@@ -2139,7 +2150,7 @@
       $("#dp-tbl tbody").innerHTML = rows.slice(0, limit).map((e) => {
         const g = Math.abs(e.peak_bp) >= 100 ? "breach" : "watch";
         return `<tr>
-          <td><span class="tsym">${esc(e.symbol)}</span>${e.systemic ? '<span class="att-sub">시장 영향 종목</span>' : ""}</td>
+          <td><span class="tsym">${esc(e.symbol)}</span>${dupName(e) ? `<span class="tname">${esc(e.name)}</span>` : ""}${e.systemic ? '<span class="att-sub">시장 영향 종목</span>' : ""}</td>
           <td>${esc(dt(e.started_at))}</td>
           <td>${e.open ? `<span class="pill is-${g} t-${g}">진행 중</span><span class="att-sub">지금 ${signed(e.last_bp, 0, "bp")}</span>` : esc(dt(e.ended_at)) + (e.end_reason === "관측 중단" ? '<span class="att-sub">관측 중단</span>' : "")}</td>
           <td class="num">${dur(e.duration_h)}</td>
@@ -2156,7 +2167,7 @@
     const since = d.meta && d.meta.since ? d.meta.since.slice(0, 10) : "";
     const big = [...(d.open || []), ...(d.closed || [])].filter((e) => Math.abs(e.peak_bp) >= 100 && (e.runs || 1) >= 2);
     setLead("dp", `진행 중인 이탈 ${bold((d.open || []).length + "건")}`
-      + ((d.open || []).length ? ` — ${(d.open || []).slice(0, 3).map((e) => bold(e.symbol) + `(최대 ${signed(e.peak_bp, 0, "bp")}, ${dur(e.duration_h)})`).join("·")}` : "")
+      + ((d.open || []).length ? ` — ${(d.open || []).slice(0, 3).map((e) => bold(symOf(e)) + `(최대 ${signed(e.peak_bp, 0, "bp")}, ${dur(e.duration_h)})`).join("·")}` : "")
       + `. ${since ? since + " 이후 " : ""}두 회차 이상 이어진 100bp 넘는 사건은 ${bold(big.length + "건")}입니다.`);
     $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 2026-10-15 이전 기록은 저장소에 남은 과거 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
   }

@@ -1,25 +1,53 @@
 {
   "schema": 1,
-  "written_at": "2026-10-15T07:40:00+09:00",
+  "written_at": "2026-10-16T08:08:00+09:00",
   "window": {
-    "from": "2026-10-14T06:00:00+09:00",
-    "to": "2026-10-15T07:00:00+09:00"
+    "from": "2026-10-15T07:00:00+09:00",
+    "to": "2026-10-16T07:00:00+09:00"
   },
   "author": "Claude(매일 자동 점검)가 공개 기사·발표를 읽고 작성",
-  "headline": "유럽은행감독청(EBA)이 Circle 의 USDC 를 MiCA(유럽연합 가상자산법)상 첫 '중요(significant) 전자화폐토큰'으로 지정했다는 보도가 나왔습니다 — 11월 12일부터 준비자산·유동성·상환계획 감독이 프랑스 당국에서 EBA 로 넘어갑니다. 시장에서는 스탠다드차타드가 스테이블코인 시장 2조 달러 도달 전망 시점을 2028년에서 2030년으로 늦췄고, 유럽 은행 37곳의 유로 스테이블코인 컨소시엄 Qivalis 가 네덜란드 중앙은행에서 전자화폐기관 인가를 받았다는 보도가 나왔습니다. 국내에서는 법인의 가상자산 투자 허용이 1년 넘게 지연되고 있다는 보도가 이어졌습니다.",
+  "headline": "국내에서는 금융위원회가 디지털자산기본법(원화 스테이블코인 근거법) 처리에 '시간이 다소 걸린다'는 입장을 냈다는 보도와 함께, 국정감사에서 원화 스테이블코인 준비자산에 주택저당증권(MBS)을 넣자는 제안에 주택금융공사 사장이 '단기 MBS는 적합하다'고 답했다는 보도가 나왔습니다. 해외에서는 미국 통화감독청장이 GENIUS Act 최종 시행규칙을 10월 말 전에 낼 것으로 본다고 했고, 스웨덴 중앙은행 총재는 외화 스테이블코인을 이유로 e-크로나 재검토를 주장했습니다. 시장에서는 마스터카드·BVNK 의 스테이블코인 결제 플랫폼 출시, 트럼프 전 고문 관련 회사가 테더에서 돈을 받았다는 WSJ 보도가 주목받았습니다.",
   "sections": [
     {
       "category": "reg_kr",
       "label": "국내 당국",
       "items": [
         {
-          "title": "법인 가상자산 투자 허용, 로드맵 발표 1년 넘도록 후속 지침 없어 — 보도",
-          "summary": "금융위원회가 2025년 2월 내놓은 로드맵은 하반기에 상장사·전문투자자(약 3,500곳)의 매매를 허용하는 계획이었지만, 아직 후속 가이드라인이 공개되지 않았다는 보도입니다. 정무위원회는 19일 금융감독원 국감, 22일 금융위·금감원 종합감사를 앞두고 있습니다.",
-          "why": "법인 자금이 들어오면 국내 원화마켓 USDT·USDC 거래 규모와 김치프리미엄 구조가 달라질 수 있어, 허용 시점은 원화 거래대금 지표를 읽는 전제입니다. 디지털자산기본법(원화 스테이블코인 근거법) 처리와 함께 묶여 지연되는 흐름으로 보도됐습니다.",
-          "published": "2026-10-14T06:20:00+09:00",
+          "title": "금융위 \"디지털자산기본법, 다소 시간 소요\" — 연내 처리 난항 보도",
+          "summary": "금융위원회가 원화 스테이블코인 발행 근거를 담을 디지털자산기본법 처리에 시간이 더 걸린다는 입장을 밝혀 연내 국회 통과가 어렵다는 보도입니다. 같은 날 다른 매체도 이 법과 금융회사 지배구조 개선안 등이 줄줄이 해를 넘길 수 있다고 짚었습니다.",
+          "why": "국내 원화 스테이블코인은 근거법이 없어 발행·인가 틀이 비어 있는 상태가 길어집니다. 그동안 국내 원화마켓에서는 달러 스테이블코인(USDT·USDC 하루 거래대금 약 3,700억 원)과 해외 발행 원화 토큰(KRWQ 등)이 공백을 메우는 구도가 이어질 수 있습니다.",
+          "published": "2026-10-14T23:29:19+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
-            {"name": "파이낸셜뉴스", "url": "https://www.fnnews.com/news/202610140620473261"}
+            {
+              "name": "이데일리",
+              "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQTFhqQlc1VGVrb0VpdnZkLVF2dWJUbENFbncyR29GNUZmUlAzMGQ5RTZkRUo2X2t6V0VOeUZ5SWpweE44aEJySDVSczAwU2x1MGFGMXJ1aVBGSk1vLW8xTF9FTmVvX0E5Z21rRmdqdlNMQUUtbmtiRlUwOGNDMWhFMQ?oc=5"
+            },
+            {
+              "name": "서울파이낸스",
+              "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE93VGM3V05lMEp5MVFpc3JCRlNYU01rU0VQc2lrbjYzUVpCVjRnUTh2RllHblVMLUVrNmhWeDBvWVlZRk5zd1ZUTExISmhlMnpDakYzLTZPZ0taMzJQNklRQ2xhMzU5YjBjVHc?oc=5"
+            }
+          ]
+        },
+        {
+          "title": "국정감사: 원화 스테이블코인 준비자산에 MBS 포함 제안 — 주금공 사장 \"단기 MBS 적합\" 보도",
+          "summary": "국회 정무위원회 민병덕 의원이 원화 스테이블코인 준비자산(발행액을 뒷받침하려고 쌓아 두는 자산)에 주택저당증권(MBS)을 넣자고 제안했고, 한국주택금융공사 사장이 만기가 짧은 MBS 는 적합하다는 취지로 답했다는 보도입니다.",
+          "why": "MBS 는 국채보다 시장 유동성이 낮고 금리가 오르면 만기가 늘어나는(조기상환 감소) 성질이 있어, 대량 상환 때 바로 팔아 현금을 마련하기 어렵습니다. 미국 GENIUS Act 의 적격 준비자산(현금·단기 국채·환매조건부채권 등)에도 MBS 는 들어 있지 않아, 국내 설계가 해외 기준보다 느슨해지는지 지켜볼 대목입니다.",
+          "published": "2026-10-15T08:15:30+00:00",
+          "confidence": "보도 기준, 1차 출처 미확인",
+          "sources": [
+            {
+              "name": "뉴스웍스",
+              "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=856650"
+            },
+            {
+              "name": "서울경제",
+              "url": "https://www.sedaily.com/article/20102203"
+            },
+            {
+              "name": "블록미디어",
+              "url": "https://www.blockmedia.co.kr/archives/1152090"
+            }
           ]
         }
       ],
@@ -30,15 +58,45 @@
       "label": "해외 당국·중앙은행",
       "items": [
         {
-          "title": "EBA, USDC 를 MiCA 첫 '중요 전자화폐토큰'으로 지정 — 11월 12일부터 EBA·프랑스 당국 공동 감독",
-          "summary": "EBA 가 Circle Internet Financial Europe 이 발행하는 USDC 를 MiCA 제43·56조에 따라 중요 전자화폐토큰으로 분류했다고 전해졌습니다(EU 에 통지된 전자화폐토큰 45종 중 첫 사례). 11월 12일부터 자기자본·준비자산·유동성·회수 및 상환계획 감독은 프랑스 ACPR 에서 EBA 로 넘어가고, 지배구조·대주주 심사 등은 ACPR 에 남습니다. EBA 는 미국 뉴욕주 금융감독청(NYDFS)과 정보교환 양해각서도 맺었습니다.",
-          "why": "글로벌 스테이블코인 발행사가 국경을 넘어 둘 이상의 감독당국을 동시에 받게 되는 첫 구체 사례로, 원화 스테이블코인 제도 설계 때 해외 발행사 감독 협력(MOU·감독자협의체) 모델의 참고점입니다. 대시보드상 USDC 는 발행잔액 $729.5억(점유율 23.7%)입니다.",
-          "published": "2026-10-14",
+          "title": "미 통화감독청장 \"GENIUS Act 최종 시행규칙, 10월 말 전 발표 예상\" — 보도",
+          "summary": "미국 통화감독청(OCC) 청장이 스테이블코인법(GENIUS Act)의 최종 시행규칙을 이달 말 전에 내놓을 것으로 본다고 말했다는 보도입니다. 8월에는 11월까지 확정하겠다고 했던 일정이 조금 당겨진 셈입니다.",
+          "why": "최종 규칙이 나오면 미국 내 발행사의 준비자산·상환·자본 기준이 확정되어, 국내 원화 스테이블코인 준비자산 논의(위 MBS 제안 등)의 비교 기준이 됩니다.",
+          "published": "2026-10-15T15:35:30+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
-            {"name": "Mondo Visione (EBA 보도자료 전재)", "url": "https://mondovisione.com/media-and-resources/news/the-eba-classifies-usdc-as-the-first-significant-e-money-token-in-the-european-u-20261014"},
-            {"name": "Cointelegraph", "url": "https://cointelegraph.com/news/eba-circle-usdc-stablecoin-significant-token-mica"},
-            {"name": "EBA — MiCA 감독 역할 안내", "url": "https://www.eba.europa.eu/activities/direct-supervision-and-oversight/ebas-supervisory-role-under-mica"}
+            {
+              "name": "블루밍비트",
+              "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE45R0I2bDBRZ3JDVHkwQUh6cmhEMzdNZ2JQS19McUtCYkJ5S0RLX2tVbUtDckxkOGpNMjZCeEhNTHpPeHFPWGRSUmxvRmltSmx3?oc=5"
+            },
+            {
+              "name": "The Block(8월 일정 보도, 배경)",
+              "url": "https://www.theblock.co/news/regulation/2026-08-19-occ-races-to-finalize-genius-act-stablecoin-rules-by-november-412240"
+            }
+          ]
+        },
+        {
+          "title": "스웨덴 중앙은행 총재 \"e-크로나 다시 검토할 때\" — 외화 스테이블코인 확산 우려",
+          "summary": "스웨덴 중앙은행(Riksbank) 총재가 디지털 유로와 달러 스테이블코인이 퍼지는 상황에서 중앙은행 디지털화폐(e-크로나) 도입을 다시 조사해야 한다고 말했다는 보도입니다. 국내 매체는 '외화 스테이블코인이 자국 통화를 위협한다'는 취지로 전했습니다.",
+          "why": "소규모 개방경제 중앙은행이 외화 스테이블코인을 통화주권 위험으로 공개 언급한 사례입니다. 원화도 같은 처지여서, 국내 원화마켓의 달러 스테이블코인 거래 비중을 볼 때 참고가 됩니다.",
+          "published": "2026-10-15T19:20:11+00:00",
+          "confidence": "보도 기준, 1차 출처 미확인",
+          "sources": [
+            {
+              "name": "Sweden Herald",
+              "url": "https://swedenherald.com/article/theden-time-to-investigate-ekrona"
+            },
+            {
+              "name": "Cointelegraph(전재)",
+              "url": "https://coinspectator.com/cointelegraph/2026/10/15/sweden-revisits-digital-krona-as-ecb-advances-digital-euro-plans/"
+            },
+            {
+              "name": "블록미디어",
+              "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5HMnF4VXAxRjV1bTAxVUlOa3pTLWdDaWIxeGpuRHRqNms5eTFTWkV3MXB2VnhjelFmQU41VGlENEJCWk0zcU1QalY1Z0FDZWxsZkhxVllUc1g?oc=5"
+            },
+            {
+              "name": "Riksbank e-krona 안내",
+              "url": "https://www.riksbank.se/en-gb/payments--cash/e-krona/"
+            }
           ]
         }
       ],
@@ -49,41 +107,60 @@
       "label": "발행사·시장",
       "items": [
         {
-          "title": "스탠다드차타드, 스테이블코인 2조 달러 전망 시점을 2028년 → 2030년으로 늦춤 — 보도",
-          "summary": "올해 스테이블코인 공급 증가가 멈췄다는 이유로 전망 시점을 2년 미뤘다는 보도입니다. 은행은 둔화를 가상자산 시장 위축에 따른 경기순환적 현상으로 봤고, 현재 시장 규모를 약 3,090억 달러로 제시했습니다.",
-          "why": "민간 대형 은행이 성장 둔화를 공식 전망에 반영한 것으로, 대시보드 30일 증감(+0.87%)과 같은 방향입니다. 원화 스테이블코인 도입 효과를 추산할 때 낙관적 성장 가정을 경계할 근거가 됩니다.",
-          "published": "2026-10-14T15:47:00+00:00",
-          "confidence": "보도 기준, 1차 출처 미확인",
+          "title": "마스터카드·BVNK, 법정화폐와 스테이블코인을 한 API 로 잇는 'Global Money Platform' 출시",
+          "summary": "마스터카드가 올해 인수한 BVNK 와 함께, 기업이 법정화폐와 스테이블코인 잔액을 한 연결 창구로 받고 보내며 카드 결제에도 쓸 수 있게 하는 플랫폼을 내놓았다는 보도입니다. 마스터카드 누리집에 같은 제목의 보도자료가 게시돼 있습니다.",
+          "why": "카드 네트워크가 스테이블코인을 일반 결제 흐름에 직접 넣으면 스테이블코인이 거래소 밖 결제·송금으로 퍼지는 속도가 빨라집니다. 국경 간 지급과 외환 관리 측면의 감독 대상이 넓어질 수 있습니다.",
+          "published": "2026-10-15T20:08:43+00:00",
+          "confidence": "보도 기준, 1차 출처 미확인(보도자료 제목만 확인)",
           "sources": [
-            {"name": "The Block", "url": "https://www.theblock.co/news/web3/2026-10-14-standard-chartered-stablecoin-market-report-418578"}
+            {
+              "name": "Mastercard 보도자료",
+              "url": "https://www.mastercard.com/global/en/news-and-trends/press/2026/october/mastercard-and-bvnk-launch-global-money-platform-to-power-a-mult.html"
+            },
+            {
+              "name": "PYMNTS",
+              "url": "https://www.pymnts.com/partnerships/2026/mastercard-and-bvnk-unite-fiat-and-stablecoins-in-global-money-platform/"
+            }
           ]
         },
         {
-          "title": "유럽 은행 37곳의 유로 스테이블코인 컨소시엄 Qivalis, 네덜란드 중앙은행 전자화폐기관 인가 — 보도",
-          "summary": "BBVA·BNP파리바·ING·DZ 은행 등이 참여한 Qivalis 가 네덜란드 중앙은행(DNB)에서 전자화폐기관(EMI) 인가를 받았다는 보도입니다. 백서 공표 등 남은 MiCA 요건을 채운 뒤 수개월 안에 유로 토큰을 발행할 계획이라고 합니다. 다만 10월 15일 아침 기준 Qivalis 누리집은 아직 '인가 신청 중'으로 적고 있습니다.",
-          "why": "은행 컨소시엄형 발행 모델은 국내 '은행 중심 원화 스테이블코인' 논의와 직접 비교되는 사례입니다. 인가가 사실이면 EU 에서 은행 공동 발행 토큰이 USDC·EURC 같은 비은행 발행 토큰과 경쟁하는 구도가 열립니다.",
-          "published": "2026-10-14T11:12:00+00:00",
+          "title": "WSJ \"트럼프 전 가상자산 고문 관련 회사, 테더에서 약 630만 달러 받아\" — 이해충돌 논란 보도",
+          "summary": "전 백악관 가상자산위원회 책임자 보 하인스가 공동 소유한 회사가 테더와의 거래에서 약 630만 달러를 받았으며 그가 스테이블코인법(GENIUS Act) 통과를 도운 뒤 이익을 얻었다고 월스트리트저널이 보도했고, 국내외 매체가 이를 이해충돌 논란으로 전했습니다.",
+          "why": "세계 최대 발행사(USDT 점유율 59.8%)와 입법 관계자의 이해관계 문제는 미국 시행규칙·인가 과정의 정치적 부담으로 이어질 수 있습니다. 사실관계는 원보도(WSJ, 유료)를 확인하지 못했습니다.",
+          "published": "2026-10-15T09:19:28+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
-            {"name": "CoinDesk", "url": "https://www.coindesk.com/policy/2026/10/14/dutch-regulator-approves-qivalis-as-electronic-money-institution-under-mica-rules"},
-            {"name": "Qivalis 보도자료 목록(인가 공지 없음)", "url": "https://qivalis.eu/press"}
+            {
+              "name": "Cryptonews(WSJ 인용)",
+              "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBFaGJDUHQ5VjRzRExNWG9aVFI0T0RodGt0ODh4RndTS21QQl8za3hqSTRYaWJ4OWx4eXEwQVhRUnJLaDh2dXNCbTh3dW5zQkducjZGbmdR?oc=5"
+            },
+            {
+              "name": "블록미디어",
+              "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE45dUt2SkR4Tk4zRlZaVkFYMHFtUVNteDRQYWIyT2cySlozeVFQOHAxQ2FsQWIwaFdsZHRmamVIQkxlWUVFMlF5TVhuQ0RfWkROeDYtYUxrS0w?oc=5"
+            }
           ]
         },
         {
-          "title": "러시아 루블 스테이블코인 A7A5 이체 급감 — Elliptic '데이터센터 피격 뒤 서비스 차질' 분석 보도",
-          "summary": "Elliptic 공동창업자가 10월 7~8일 밤 우크라이나 드론의 얀덱스 데이터센터 공격 직후 A7A5 이체가 하루 약 600건에서 이더리움 18건·트론 14건 수준으로 줄었다고 분석했다는 보도입니다. 서비스 중단·상환 문제 이야기는 A7A5 텔레그램 채널 등에서 나온 것이고, 기사도 인과관계는 확정하지 않았습니다.",
-          "why": "제재 대상 토큰도 발행·상환 인프라(호스팅·은행 연결)가 끊기면 사실상 멈춘다는 점을 보여 줍니다. 대시보드는 A7A5 를 원 데이터 수량 약 5.5억 개 × CoinGecko 가격으로 약 $640만으로 계상하는데, 보도된 시가총액(약 4.6억~4.8억 달러)과 70배 넘게 차이 나 JPYC 와 같은 단위 오류 가능성을 점검 대상에 올렸습니다(미확인).",
-          "published": "2026-10-14T15:38:00+00:00",
+          "title": "리플 RLUSD, 미 크로스리버은행 결제 도입·DriveWealth 유럽 증권 정산 연동 — 보도",
+          "summary": "리플의 달러 스테이블코인 RLUSD 를 미국 크로스리버은행이 결제에 도입하고, 증권 중개 인프라 업체 DriveWealth 가 유럽에서 RLUSD 로 증권 대금을 정산하는 연동을 시작한다는 보도가 이어졌습니다.",
+          "why": "RLUSD 는 국내 4개 거래소 원화마켓에 상장돼 있고 최근 24시간 전 세계 거래의 약 1.4%가 국내 원화마켓에서 일어났습니다(대시보드). 은행·증권 정산 쓰임이 늘면 발행량(현재 $24.1억)과 국내 거래가 함께 움직이는지 볼 만합니다.",
+          "published": "2026-10-15T20:14:53+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
-            {"name": "Bitcoin.com News", "url": "https://news.bitcoin.com/stablecoins/ukraine-kinetic-sanctions-disrupt-russian-a7a5-stablecoin-elliptic/"},
-            {"name": "Elliptic — A7A5 7월 분석(배경)", "url": "https://www.elliptic.co/insights/the-fall-of-a7a5-how-sanctions-strangled-the-ruble-stablecoin/"}
+            {
+              "name": "Pluang",
+              "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPLWNJeVJUQXpKcEZEZmJSV01KMFpPaFhzU0FlMTRaSm1KWDZvSnJSZzVmU183Ujc1LTFvUWlPVGlGX0NfVGZSNUNqX2ZKMFI4Y2Z2WTJEVktMQlJTYjBsNThiNV8wMWJrTXhDYTBtVGJRUXBCakZkU2pqZXZuVDJUeXY4M0puRzFMNjZ1YVZIbjFNRDlrV2gzQzMxcF9yUQ?oc=5"
+            },
+            {
+              "name": "Yahoo Finance",
+              "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPYmZBQlFYSk5jYzQ0V2xLVlNRTXYwZ2k1VExORzdYN1pxSnFMQmNlY2JQTk9WWDkxNnF5aHNsS0U2SGRGcWN3RUptOUVzS1NkekpYWmtacGZ5Yzg5SEt1QjBzd2Z3eDdLRnc1Y1NuSVp6WjRVTER5ZTA4VzJDOEhjLXk1SlhadWdXVEhEd3VEVmtTUDBVV3BpU1M4TFllNW1QVkhtdw?oc=5"
+            }
           ]
         }
       ],
       "empty_note": ""
     }
   ],
-  "dashboard_link": "대형 종목의 디페그(가격 이탈) 뉴스는 없었습니다. 대시보드 기준(10월 14일 18:51 UTC) 총 발행잔액은 $307.4B 로 하루 전($313.3B)보다 $59억 줄었는데, 대부분은 이자부 국채 토큰 USDY·USYC 와 Re reUSD(합계 약 $57억)가 원천(DefiLlama) 목록에서 빠진 탓이고 실제 상환이 아닙니다(30일 증감 +0.87%, 원천 일별 집계 기준). 페그 경보는 소형 AP USDA(−106bp)·Resupply reUSD(−103bp) 2종뿐입니다. USDT 김치프리미엄은 +1.44%로 주의선(0.5%) 위이며, 이 중 약 0.35%p 는 기준환율이 1,341.45원에서 1,336.79원으로 바뀐 영향입니다. 테더 동결은 10월 14일 20건(소각 8건)입니다.",
-  "caveats": "Claude 가 공개 보도와 발표를 읽고 쓴 요약이며 원문과 다를 수 있습니다. '보도 기준' 항목은 당국·발행사 원문으로 확인하지 못했습니다(EBA 원문 누리집 확인 실패, 전재본 기준). IMF 의 달러 스테이블코인 자본유출 경고 보도(이데일리)는 근거 문서를 찾지 못해 넣지 않았습니다. 개인이 공개 데이터로 만든 참고 자료이며 어떠한 기관의 공식 견해도 아닙니다."
+  "dashboard_link": "대형 종목의 디페그(가격 이탈) 뉴스는 없었습니다. 대시보드 기준(10월 15일 21:44 UTC) 총 발행잔액은 $307.0B(하루 −$8.1억, 30일 +0.64%)이고, 페그 경보는 소형 AP USDA(−124bp)·Resupply reUSD(−105bp) 2종뿐입니다. USDT 김치프리미엄은 +0.41%로 하루 전(+1.44%)보다 크게 낮아졌습니다. 국내 원화마켓 USDT·USDC 거래대금은 10월 15일 3,738억 원으로 전날(2,661억 원)보다 40% 늘었습니다. 테더 동결은 10월 15일 29건입니다. FDUSD 는 9월 준비금 보고서가 평소 일정보다 4일 늦었고(발행사 투명성 페이지 기준 8월분이 최신), 10월 14~15일 −32bp 까지 밀렸다가 복귀했습니다.",
+  "caveats": "Claude 가 공개 보도와 발표를 읽고 쓴 요약이며 원문과 다를 수 있습니다. 이번 회차는 기사 본문을 직접 열지 못한 항목이 많아(제목·검색 요약 기준) 모두 '보도 기준'으로 표시했습니다. EBA 의 USDC '중요 전자화폐토큰' 지정은 10월 14일 발표로 전날 요약에 실었습니다. 여당의 가상자산 과세 2029년 유예 법안 발의 보도(연합뉴스)는 스테이블코인과 직접 관련이 적어 넣지 않았습니다. 개인이 공개 데이터로 만든 참고 자료이며 어떠한 기관의 공식 견해도 아닙니다."
 }
