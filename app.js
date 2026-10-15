@@ -2161,49 +2161,6 @@
     $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 2026-10-15 이전 기록은 저장소에 남은 과거 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
   }
 
-  // ── 테더 발행·소각 ─────────────────────────────────────────
-  function renderMintBurn(m, SNAP) {
-    if (!m || !m.totals) return;
-    $("#mb-sec").hidden = false;
-    const t = m.totals;
-    $("#mb-issue").textContent = "$" + usd(t.issue);
-    $("#mb-redeem").textContent = "$" + usd(t.redeem);
-    $("#mb-net").textContent = (t.net >= 0 ? "+$" : "−$") + usd(Math.abs(t.net));
-    $("#mb-n").textContent = (t.events || 0).toLocaleString() + "건";
-    const fail = (m.meta.status || []).filter((x) => !x.ok).map((x) => x.chain);
-    $("#mb-n-s").textContent = fail.length ? `${fail.join("·")} 수집 실패` : (m.last_event ? `마지막 기록 ${m.last_event}` : "이더리움·트론");
-    // 일별 막대: 위 = 발행, 아래 = 소각(최근 30일)
-    const days = [];
-    const end = new Date(m.meta.generated_at);
-    const ND = 90;
-    for (let i = ND - 1; i >= 0; i--) days.push(new Date(end.getTime() - i * 864e5).toISOString().slice(0, 10));
-    const val = (d, k) => { const x = (m.daily || {})[d] || {}; return (x["ethereum_" + k] || 0) + (x["tron_" + k] || 0); };
-    const up = days.map((d) => val(d, "issue")), dn = days.map((d) => val(d, "redeem"));
-    const mx = Math.max(1, ...up, ...dn);
-    const W = 600, H = 160, mid = 80, bw = W / days.length;
-    const bars = days.map((d, i) => {
-      const hu = up[i] / mx * (mid - 14), hd = dn[i] / mx * (mid - 14);
-      const tip = `${d} · 발행 $${usd(up[i])} · 소각 $${usd(dn[i])}`;
-      return `<g><title>${esc(tip)}</title>`
-        + (hu ? `<rect class="mb-up" x="${(i * bw + 1).toFixed(1)}" y="${(mid - hu).toFixed(1)}" width="${(bw - 2).toFixed(1)}" height="${hu.toFixed(1)}"/>` : "")
-        + (hd ? `<rect class="mb-dn" x="${(i * bw + 1).toFixed(1)}" y="${mid}" width="${(bw - 2).toFixed(1)}" height="${hd.toFixed(1)}"/>` : "")
-        + `</g>`;
-    }).join("");
-    $("#mb-chart").innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:160px">${bars}
-      <line class="mb-axis" x1="0" x2="${W}" y1="${mid}" y2="${mid}" vector-effect="non-scaling-stroke"/></svg>
-      <div class="mb-legend"><span><i class="res-sw mb-up-sw"></i>발행(위) · 최대 하루 $${usd(mx)}</span><span><i class="res-sw mb-dn-sw"></i>소각(아래)</span><span class="mb-range">${days[0].slice(5)} ~ ${days[ND - 1].slice(5)} (90일)</span></div>`
-      + ((m.recent || []).length ? `<p class="foot">최근 기록: ${m.recent.slice(0, 6).map((e) => `${esc(e.date)} ${e.chain === "Tron" ? "트론" : "이더리움"} ${e.kind === "issue" ? "발행" : "소각"} $${usd(e.amount)}`).join(" · ")}</p>` : "");
-    const usdt = (SNAP && (SNAP.assets || []).find((a) => a.symbol === "USDT")) || null;
-    const net30 = usdt && usdt.net_30d_usd != null ? usdt.net_30d_usd : null;
-    const y = m.totals_365 || {};
-    setLead("mb", (t.events ? `최근 30일 테더는 ${bold("$" + usd(t.issue))}를 발행하고 ${bold("$" + usd(t.redeem))}를 소각했습니다`
-      : `최근 30일 테더의 발행·소각 기록은 없습니다(마지막 ${esc(m.last_event || "—")})`)
-      + (y.events ? `. 1년 합계는 발행 ${bold("$" + usd(y.issue))}·소각 ${bold("$" + usd(y.redeem))}(${y.events}건)` : "")
-      + (net30 != null ? ` — 30일 발행잔액 순증감(${net30 >= 0 ? "+" : "−"}$${usd(Math.abs(net30))})과의 차이는 테더 금고에 쌓아 둔 미유통 재고와 다른 체인 몫입니다.` : "."));
-    $("#mb-note").textContent = (m.meta.caveat || "") + ". 막대에 커서를 올리면 그날의 발행·소각 금액이 나옵니다. "
-      + "USDC 는 체인 간 이동(CCTP)도 소각·발행으로 기록돼 상환과 구별되지 않아 넣지 않았습니다.";
-  }
-
   // ── 이번 주 요약 ──────────────────────────────────────────
   function renderWeekly(w) {
     if (!w || !(w.lines || []).length) return;
@@ -2997,12 +2954,6 @@
       if (r.ok) renderRegulatory(await r.json());
     } catch (e) {
       console.info("regulatory.json 없음 — 규제 요건 비교 생략");
-    }
-    try {
-      const r = await fetch("data/mintburn.json", { cache: "no-cache" });
-      if (r.ok) renderMintBurn(await r.json(), snap);
-    } catch (e) {
-      console.info("mintburn.json 없음 — 테더 발행·소각 생략");
     }
     try {
       const r = await fetch("data/depeg_events.json", { cache: "no-cache" });

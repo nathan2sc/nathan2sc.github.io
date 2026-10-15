@@ -233,22 +233,6 @@
   </div>
 </section>
 
-<section class="wrap block" id="mb-sec" aria-labelledby="h-mb" hidden>
-  <div class="block-head">
-    <h2 id="h-mb">테더 발행·소각 (발행사 장부)</h2>
-    <p class="lead-stat" id="lead-mb" hidden></p>
-    <p>30일 순증감률은 ‘늘고 준 결과’만 보여 줍니다. 여기서는 테더가 직접 남기는 발행(Issue)·소각(Redeem) 기록을 날마다 더해, 새로 찍은 양과 상환받아 없앤 양을 따로 봅니다. 체인 사이를 옮겨 다닌 양(브리지)은 섞이지 않습니다.</p>
-  </div>
-  <div class="figs prem-figs">
-    <div class="fig"><p class="fig-k">30일 발행</p><p class="fig-v" id="mb-issue">—</p><p class="fig-s">테더 금고로의 발행 승인</p></div>
-    <div class="fig"><p class="fig-k">30일 소각</p><p class="fig-v" id="mb-redeem">—</p><p class="fig-s">상환받아 없앤 양</p></div>
-    <div class="fig"><p class="fig-k">순발행</p><p class="fig-v" id="mb-net">—</p><p class="fig-s" id="mb-net-s">발행 − 소각</p></div>
-    <div class="fig"><p class="fig-k">건수</p><p class="fig-v" id="mb-n">—</p><p class="fig-s" id="mb-n-s">이더리움·트론</p></div>
-  </div>
-  <div class="panel"><div id="mb-chart" class="mb-chart" role="img" aria-label="일별 발행(위)과 소각(아래)"></div></div>
-  <p class="foot" id="mb-note"></p>
-</section>
-
 <section class="wrap block" id="xc-sec" aria-labelledby="h-xc" hidden>
   <div class="block-head">
     <h2 id="h-xc">원천 데이터 대조</h2>
@@ -795,7 +779,6 @@
         <li><strong>비달러 페그 합산</strong>: 2026-10-15 전까지 시장 전체 시계열과 체인별 집계는 원천의 페그 통화별 값 중 달러 페그만 읽어 비달러 페그(약 $12억)가 빠져 있었습니다. 지금은 모두 더합니다.</li>
         <li><strong>상환 대응력</strong>(어테스테이션 탭): 보고서의 준비자산을 현금화 속도로 나눕니다 — 즉시(현금·요구불예금·익일물 리포·정부 MMF), 수일 내(단기국채·기간물 리포·정기예금), 불확실(금·비트코인·주식·담보대출·기타). 분모는 보고서상 발행량이고, 급매 할인율은 적용하지 않았습니다.</li>
         <li><strong>디페그 사건</strong>(<code>etl/depeg_events.py</code>): 발행잔액 $1억 이상·이자부 아님·시장 가격 기준 종목이 주의선(±25bp)을 넘은 첫 회차부터 돌아온 첫 회차까지를 한 사건으로 묶어 최대 편차·지속시간을 남깁니다. 48시간 넘게 관측이 끊기면 ‘관측 중단’으로 닫습니다. 2026-08-09~10-15 기록은 저장소의 과거 스냅숏 686회차를 지금 규칙으로 재생해 만들었습니다(가격 0·페그 1.5배 넘는 값은 자료 오류로 제외).</li>
-        <li><strong>테더 발행·소각</strong>(<code>etl/fetch_mintburn.py</code>): 이더리움·트론 USDT 컨트랙트의 Issue·Redeem 이벤트를 최근 400일 날짜별로 더합니다. Issue 는 테더 금고로의 발행 승인(아직 시장에 나가지 않은 재고 포함), Redeem 은 상환분 소각입니다. 동결 자금 소각은 ‘동결·이체’ 탭에서 따로 셉니다.</li>
         <li><strong>데이터 경보 알림</strong>(<code>.github/scripts/notify_alerts.py</code>): 매 수집 회차 직전 커밋 값과 비교해 새로 생긴 경보(시스템 등급 상승, 시장 영향 종목 경보, 큰 디페그 사건 시작, 원천 이상, 새 원화·엔화 페그 종목, 총액 대조 차이, 김치프리미엄·어테스테이션 등급 상승)만 텔레그램으로 보냅니다.</li>
         <li><strong>이번 주 요약</strong>(<code>etl/weekly_summary.py</code>): 데이터 파일만으로 최근 7일 변화를 계산해 뉴스 탭 맨 위에 두고, 보고서에 붙일 마크다운 문단을 복사할 수 있게 했습니다.</li>
         <li><strong>과거 시점 보기</strong>: 주소 끝에 <code>?at=2026-10-01</code> 처럼 날짜를 붙이거나 아래 ‘데이터’ 칸에서 날짜를 고르면, 그날(KST) 마지막 수집 커밋의 데이터 파일로 화면 전체를 다시 그립니다(GitHub 공개 API·원본 파일 사용, 실시간 갱신 꺼짐).</li>
