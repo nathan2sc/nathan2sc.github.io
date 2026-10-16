@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>데이터 안내 · 스테이블코인 모니터링</title>
+<meta name="description" content="스테이블코인 모니터링 각 항목의 데이터 구분(온체인·오프체인), 출처, 수집 방법, 한계와 출처별 운영 주체.">
+<meta name="color-scheme" content="light dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    try {
+      var t = localStorage.getItem("scw-theme");
+      if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+      else if (matchMedia("(prefers-color-scheme: dark)").matches) document.documentElement.dataset.theme = "dark";
+    } catch (e) {}
+  })();
+</script>
+<style>
+  .g-top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--rule)}
+  .g-top .wrap{display:flex;align-items:center;gap:1rem;padding-block:.7rem;max-width:880px}
+  .g-top a{color:var(--accent);text-decoration:none;font-weight:500;font-size:14px}
+  .g-top h1{margin:0;font-size:16px}
+  .g-main{max-width:880px;padding-block:1.4rem 3rem}
+  .g-lede{color:var(--mid);font-size:14px;margin:0 0 1.2rem}
+  .g-sec{margin:0 0 2rem}
+  .g-sec>h2{font-size:18px;margin:0 0 .8rem;padding-bottom:.35rem;border-bottom:2px solid var(--ink)}
+  .g-legend{list-style:none;margin:0;padding:0;font-size:13.5px}
+  .g-legend li{margin:.35rem 0}
+  .g-note{font-size:12.5px;color:var(--dim);margin:.7rem 0 0}
+  .g-toc ul{list-style:none;margin:0;padding:0;font-size:13.5px;line-height:1.9}
+  .g-toc b{display:inline-block;min-width:6.5em;color:var(--mid);font-weight:600}
+  .g-toc a{color:var(--accent)}
+  .dc-page{border:1px solid var(--rule);border-radius:8px;padding:14px 16px;background:var(--card);margin:0 0 12px;scroll-margin-top:64px;font-size:14px}
+  .dc-page h3{margin:0 0 .45rem;font-size:15.5px}
+  html[data-theme="dark"] .g-top a,html[data-theme="dark"] .g-toc a{color:#8fb8dd}
+</style>
+</head>
+<body>
+<header class="g-top">
+  <div class="wrap">
+    <a href="./">← 대시보드</a>
+    <h1>데이터 안내</h1>
+  </div>
+</header>
+<main class="wrap g-main">
+  <p class="g-lede">대시보드 각 항목이 어떤 데이터(온체인·오프체인)를 어디서, 어떻게 모으는지와 읽을 때의 한계를 모았습니다. 개인이 공개 데이터로 만든 참고 자료이며 어떠한 기관의 공식 견해도 아닙니다.</p>
+  <div id="guide-root"><p class="g-note">불러오는 중…</p></div>
+</main>
+<script src="datacards.js"></script>
+</body>
+</html>

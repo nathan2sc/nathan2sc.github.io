@@ -1314,3 +1314,53 @@ html[data-theme="dark"]{--r-cash:#7FB2D6;--r-tbill:#5B95C4;--r-repo:#3E6E99;--r-
 /* 과거 시점 보기 */
 .past-band{position:sticky;top:0;z-index:50;padding:.55rem 16px;background:#5A3D06;color:#fff;font-size:13px;text-align:center}
 .past-band a{color:#fff;text-decoration:underline}
+
+/* 데이터 안내 카드 (2026-10-16) — 넓은 화면은 항목 오른쪽 카드, 좁은 화면은 제목 아래 링크 + guide.html */
+.dc-linkp{margin:.15rem 0 .5rem}
+.dc-link{font-size:13px;font-weight:500;color:var(--accent);text-decoration:none}
+.dc-link:hover{text-decoration:underline}
+.withdc>.dc{display:none}
+.dc{font-size:13px;line-height:1.55;color:var(--ink)}
+.dc .dc-head{margin:0 0 .45rem;font-weight:700;font-size:12px;letter-spacing:.02em;color:var(--dim)}
+.dc-tags{margin:0 0 .5rem;display:flex;gap:5px;flex-wrap:wrap}
+.dc-tag{display:inline-block;border:1px solid var(--rule);border-radius:999px;padding:0 8px;font-size:11.5px;line-height:1.7;color:var(--mid);background:var(--card);white-space:nowrap}
+.dc-tag.dc-k-onchain,.dc-tag.dc-k-onchain-agg{border-color:color-mix(in srgb,var(--sound) 55%,var(--rule));color:var(--sound)}
+.dc-tag.dc-k-offchain{border-color:color-mix(in srgb,var(--accent) 55%,var(--rule));color:var(--accent)}
+.dc-tag.dc-k-mixed{border-color:color-mix(in srgb,var(--petrol) 45%,var(--rule));color:var(--petrol)}
+.dc-tag.dc-k-ai{border-color:color-mix(in srgb,var(--watch) 55%,var(--rule));color:var(--watch)}
+.dc dl{margin:0}
+.dc dt{font-weight:600;margin-top:.5rem;color:var(--mid);font-size:12px}
+.dc dd{margin:.08rem 0 0}
+.dc ul{margin:.1rem 0 0 1rem;padding:0}
+.dc li{margin:.1rem 0}
+.dc a{color:var(--accent)}
+.dc-more{display:inline-block;margin-top:.7rem;font-size:12.5px;text-decoration:none}
+.dc-more:hover{text-decoration:underline}
+@media (min-width:1280px){
+  :root{--maxw:1520px}
+  .withdc:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:32px;align-items:start}
+  .withdc>*{grid-column:1;min-width:0}
+  .withdc>.dc{display:block;grid-column:2;grid-row:1 / span 60;position:sticky;top:64px;max-height:calc(100vh - 80px);overflow:auto;
+    border:1px solid var(--rule);border-radius:8px;padding:14px 16px 16px;background:var(--card)}
+  .dc-linkp{display:none}
+}
+html[data-theme="dark"] .dc-tag{background:transparent}
+html[data-theme="dark"] .dc-tag.dc-k-onchain,html[data-theme="dark"] .dc-tag.dc-k-onchain-agg{color:#7fc8a6;border-color:#3f6b57}
+html[data-theme="dark"] .dc-tag.dc-k-offchain{color:#8fb8dd;border-color:#3d5a76}
+html[data-theme="dark"] .dc-tag.dc-k-mixed{color:#a9c1d3;border-color:#4a5f70}
+html[data-theme="dark"] .dc-tag.dc-k-ai{color:#e0b46a;border-color:#6e5426}
+html[data-theme="dark"] .dc a,html[data-theme="dark"] .dc-link{color:#8fb8dd}
+
+/* 출처 소개(방법론 탭·안내 페이지 공용) */
+.src-dir-wrap{margin-bottom:1.6rem}
+.src-g{margin:1.1rem 0 .5rem;font-size:13px;color:var(--mid)}
+.src-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.src-card{border:1px solid var(--rule);border-radius:8px;padding:12px 14px;background:var(--card);font-size:13px;line-height:1.55;scroll-margin-top:72px}
+.src-card h5{margin:0 0 .3rem;font-size:14px}
+.src-card dl{margin:0}
+.src-card dt{font-weight:600;margin-top:.4rem;color:var(--mid);font-size:12px}
+.src-card dd{margin:.05rem 0 0}
+.src-card .dc-chk{margin:.55rem 0 0;font-size:11.5px;color:var(--dim)}
+.src-card a{color:var(--accent)}
+html[data-theme="dark"] .src-card a{color:#8fb8dd}
+.src-card:target,.dc-page.is-target,.src-card.is-target{outline:2px solid var(--accent);outline-offset:2px}
