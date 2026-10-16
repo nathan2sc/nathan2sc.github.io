@@ -1083,6 +1083,7 @@
     $("#cap-flow").textContent = whole ? flowName : `${o.short} ${flowName}`;
     $("#seg-flow").textContent = o.chain ? "순유출입" : "순증감률";
     renderChainNote(o);
+    renderChainFlow(o);
 
     // 고르지 않은 쪽은 숨긴다. 숨은 동안에는 폭이 0이라 그려지지 않고,
     // 다시 보이는 순간 ResizeObserver 가 같은 자리에서 그려 준다.
@@ -1265,6 +1266,33 @@
     if (gap) bits.push(`원천에서 하루만 절반 아래로 꺼진 날이 ${gap}일 있습니다(체인 몫 누락 의심, 고치지 않고 그대로 표시).`);
     bits.push(`체인 시계열 기준 ${esc(m.date || "—")} (DefiLlama 체인별 집계).`);
     el.innerHTML = bits.join(" ");
+    el.hidden = false;
+  }
+  // 체인을 고르면 최근 30일 유통량 변화를 발행·소각 / 금고 / 브리지로 나눠 보여 준다(2026-10-16).
+  // 값은 ETL(etl/fetch_chain_history.py decompose)이 계산해 시계열에 flow30 으로 붙인다.
+  const sUsd = (v) => (v == null ? "—" : (v < 0 ? "−$" : "+$") + usd(Math.abs(v)));
+  function renderChainFlow(o) {
+    const el = $("#chain-flow");
+    if (!el) return;
+    const s = o.chain ? chainSeries(o.key, o.chain) : null;
+    const f = s && s.flow30;
+    if (!f) { el.hidden = true; return; }
+    const rows = [
+      ["발행사 직접 발행·소각", f.issue, "그 체인에서 발행사가 새로 찍은 양(+)과 상환받아 없앤 양(−)의 차이"],
+      ["발행사 금고 방출·회수", f.treasury, "발행해 두고 금고에 묶어 둔 미유통분에서 풀려나온 양(+) 또는 다시 묶인 양(−)"],
+      ["브리지 순유입·순유출", f.bridge, `다른 체인에서 들어온 양 ${sUsd(f.bridge_in)} · 다른 체인으로 나간 양 ${sUsd(-f.bridge_out)}`],
+    ];
+    const max = Math.max(1, ...rows.map((r) => Math.abs(r[1] || 0)), Math.abs(f.dc || 0));
+    const bar = (v) => {
+      const w = Math.max(0.5, Math.abs(v || 0) / max * 50);
+      return `<span class="cf-bar"><span class="cf-axis"></span><span class="cf-fill ${v < 0 ? "neg" : "pos"}" style="${v < 0 ? "right:50%" : "left:50%"};width:${w.toFixed(2)}%"></span></span>`;
+    };
+    const d = (t) => isoDate(t).slice(5).replace("-", ".");
+    const share = f.c1 ? f.bridged_in_stock / f.c1 * 100 : null;
+    el.innerHTML = `<p class="cf-h">최근 30일 <b>${esc(o.short)}</b> 유통량 변화 <b class="cf-nw ${f.dc < 0 ? "t-breach" : "t-sound"}">${sUsd(f.dc)}</b>는 어디서 왔나 <span class="cf-d">${esc(d(f.from))} → ${esc(d(f.to))}</span></p>
+      <div class="cf-rows">${rows.map(([k, v, tip]) => `<div class="cf-row" title="${esc(tip)}"><span class="cf-k">${esc(k)}</span>${bar(v)}<span class="cf-v ${v < 0 ? "t-breach" : v > 0 ? "t-sound" : ""}">${sUsd(v)}</span></div>`).join("")}</div>
+      <p class="cf-foot">지금 이 체인에 다른 체인에서 브리지로 들어와 있는 양 ${f.bridged_in_stock > 0 ? `$${usd(f.bridged_in_stock)}${share != null ? `(유통량의 ${share < 0.1 ? "<0.1" : share.toFixed(1)}%)` : ""}` : "없음"} · 이 체인에서 다른 체인으로 나가 있는 양 $${usd(Math.max(0, f.bridged_out_stock))} · 발행사 금고(미유통) $${usd(f.unreleased_stock)}. 세 갈래의 합이 유통량 변화와 같습니다(DefiLlama 체인별 집계 기준).`
+      + (f.inconsistent ? ` <span class="t-watch">원천의 발행·유입 칸과 유통량이 맞지 않아(유출분이 음수) 분해 값을 그대로 믿기 어렵습니다.</span>` : "") + `</p>`;
     el.hidden = false;
   }
   async function loadChainHistory() {
@@ -2188,6 +2216,59 @@
 
   // ── 규제 요건 비교 ─────────────────────────────────────────
   const EX_KO = { upbit: "업비트", bithumb: "빗썸", coinone: "코인원", digitalx: "디지털엑스", gopax: "고팍스" };
+  // 브리지 의존도(data/bridges.json, 2026-10-16)
+  const BRIDGE_KO = {
+    bsc: "바이낸스 브리지(Binance-Peg)", layerzero: "LayerZero", wormhole: "Wormhole", allbridge: "Allbridge",
+    arbitrum: "Arbitrum 공식 브리지", optimism: "Optimism 공식 브리지", polygon: "Polygon PoS 브리지",
+    base: "Base 공식 브리지", axelar: "Axelar", "not-found": "출처 미상",
+    multichain: "Multichain(2023년 7월 해킹 후 운영 중단)",
+  };
+  // 원천이 브리지 이름 대신 컨트랙트 주소를 적은 경우(예: TON) 앞뒤만 보인다.
+  const bridgeName = (b) => BRIDGE_KO[b] || (String(b).length > 24 ? `주소 ${String(b).slice(0, 6)}…${String(b).slice(-4)}` : b);
+  const BRIDGE_DEFUNCT = new Set(["multichain"]);
+  const pct1 = (x) => (x == null ? "—" : (x * 100 >= 99.95 ? "100" : (x * 100).toFixed(1)) + "%");
+  function renderBridges(d) {
+    if (!d || !(d.chains || []).length) return;
+    $("#br-sec").hidden = false;
+    // 큰 체인만 표에 두고 작은 체인은 한 줄로 묶는다(전체는 아래 종목·체인별 상세).
+    const MAIN_MIN = 50e6;
+    const main = d.chains.filter((c) => c.bridged_usd >= MAIN_MIN);
+    const rest = d.chains.filter((c) => c.bridged_usd < MAIN_MIN);
+    $("#br-chain-tbl tbody").innerHTML = main.map((c) => `<tr>
+      <td>${esc(c.chain)}</td>
+      <td class="num">$${usd(c.bridged_usd)}</td>
+      <td class="num">${pct1(c.share)}</td>
+      <td>${(c.bridges || []).map((b) => `${esc(bridgeName(b.bridge))} <span class="att-sub-i">$${usd(b.usd)}</span>`).join("<br>")}</td>
+      <td>${[...new Set(c.assets || [])].map((x) => `<span class="tsym">${esc(x)}</span>`).join(" ")}</td>
+    </tr>`).join("") + (rest.length ? `<tr class="br-rest"><td>그 밖의 ${rest.length}개 체인</td>
+      <td class="num">$${usd(rest.reduce((a, c) => a + c.bridged_usd, 0))}</td><td class="num">—</td>
+      <td colspan="2"><span class="att-sub-i">체인당 $${usd(MAIN_MIN)} 미만 — 아래 ‘종목·체인별 상세’에 모두 있습니다</span></td></tr>` : "");
+    const rows = [];
+    (d.assets || []).forEach((a) => (a.rows || []).forEach((r) => rows.push({ ...r, symbol: a.symbol, fresh: a.fresh })));
+    rows.sort((x, y) => y.bridged_usd - x.bridged_usd);
+    $("#br-tbl tbody").innerHTML = rows.map((r) => `<tr>
+      <td><span class="tsym">${esc(r.symbol)}</span>${r.fresh === false ? ' <span class="att-sub-i">전날 값</span>' : ""}</td>
+      <td>${esc(r.chain)}</td>
+      <td class="num">$${usd(r.bridged_usd)}</td>
+      <td class="num">${pct1(r.share)}</td>
+      <td>${(r.bridges || []).map((b) => `${esc(bridgeName(b.bridge))} ← ${esc(b.from)} <span class="att-sub-i">$${usd(b.usd)}</span>`).join("<br>")}${r.bridges_more ? `<br><span class="att-sub-i">외 ${r.bridges_more}건</span>` : ""}</td>
+    </tr>`).join("");
+    const tot = d.chains.reduce((a, c) => a + c.bridged_usd, 0);
+    const top = d.chains[0];
+    const full = d.chains.filter((c) => c.share != null && c.share >= 0.99).map((c) => c.chain);
+    setLead("br", `발행잔액 상위 종목 가운데 다른 체인에서 브리지로 들어온 스테이블코인은 ${bold("$" + usd(tot))}입니다. 가장 큰 곳은 ${bold(top.chain)}로 ${bold("$" + usd(top.bridged_usd))}이며 대부분 ${esc(bridgeName((top.bridges[0] || {}).bridge || ""))} 몫입니다.`
+      + (full.length ? ` 해당 종목 유통량 거의 전부가 브리지 몫인 체인은 ${bold(full.length + "곳")}(${full.slice(0, 4).map(esc).join("·")} 등)입니다.` : ""));
+    const dead = d.chains.flatMap((c) => (c.bridges || []).filter((b) => BRIDGE_DEFUNCT.has(b.bridge)).map((b) => ({ chain: c.chain, usd: b.usd })));
+    if (dead.length) {
+      $("#lead-br").innerHTML += ` 운영이 중단된 브리지(Multichain) 몫 ${dead.map((x) => `${bold(x.chain)} ${bold("$" + usd(x.usd))}`).join("·")}이 원천 유통량에 아직 남아 있습니다 — 실제로는 상환이 어려울 수 있는 물량입니다.`;
+    }
+    const m = d.meta || {};
+    $("#br-note").textContent = `${m.rule || ""} 기준 ${m.date || "—"}(UTC, 하루 1번).`
+      + (m.carried && m.carried.length ? ` 오늘 받지 못해 전날 값을 쓴 종목: ${m.carried.join(", ")}.` : "")
+      + (m.negative_entries ? ` 원천에 음수로 기록된 브리지 항목 ${m.negative_entries}건은 합계에서 뺐습니다.` : "")
+      + " ‘출처 미상’은 원천이 브리지를 특정하지 못한 몫입니다. 원천이 추적하지 않는 브리지·랩핑 토큰은 빠져 있습니다.";
+  }
+
   function renderRegulatory(r) {
     if (!r || !(r.rows || []).length) return;
     $("#reg-sec").hidden = false;
@@ -2959,6 +3040,12 @@
       if (r.ok) renderWeekly(await r.json());
     } catch (e) {
       console.info("weekly.json 없음 — 이번 주 요약 생략");
+    }
+    try {
+      const r = await fetch("data/bridges.json", { cache: "no-cache" });
+      if (r.ok) renderBridges(await r.json());
+    } catch (e) {
+      console.info("bridges.json 없음 — 브리지 의존도 생략");
     }
     try {
       const r = await fetch("data/regulatory.json", { cache: "no-cache" });
