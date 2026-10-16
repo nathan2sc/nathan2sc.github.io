@@ -1364,3 +1364,7 @@ html[data-theme="dark"] .dc a,html[data-theme="dark"] .dc-link{color:#8fb8dd}
 .src-card a{color:var(--accent)}
 html[data-theme="dark"] .src-card a{color:#8fb8dd}
 .src-card:target,.dc-page.is-target,.src-card.is-target{outline:2px solid var(--accent);outline-offset:2px}
+
+/* 오늘의 뉴스 요약 머리 문단(2026-10-16): 다른 항목의 한 줄 요약과 달리 여러 문장이라
+   기본 60ch 폭에서는 화면 가운데서 줄이 꺾여 길게 늘어졌다. 아래 기사 목록과 같은 폭으로 편다. */
+#digest-sec .block-head{max-width:none}
