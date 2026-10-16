@@ -444,6 +444,17 @@
     return top.join(" · ") + (rest > 0 ? ` 외 ${rest}` : "");
   };
 
+  // 감시목록 편차의 가격 출처 설명. 출처가 둘이면 중간값 기준이고, 출처별 편차를 함께 보인다.
+  // (예: " · DefiLlama −3.2 / CoinGecko −27.4bp 중간값, 두 출처 차이 24.2bp")
+  const watchSrcTxt = (a) => {
+    const by = a.dev_bp_local_by_source || {};
+    const ks = Object.keys(by).filter((k) => by[k] != null);
+    if (ks.length < 2) return ks.length === 1 ? ` · ${ks[0]} 가격 1곳` : "";
+    return ` · ${ks.map((k) => `${k} ${signed(by[k], 1)}`).join(" / ")}bp 중간값`
+      + (a.price_spread_bp != null ? `, 두 출처 차이 ${a.price_spread_bp}bp` : "")
+      + (a.price_quality === "degraded" ? " — 출처끼리 어긋나 관측 신뢰도 낮음" : "");
+  };
+
   function renderWatchlist(d) {
     const w = d.watchlist;
     const wrap = $("#watch-wrap");
@@ -549,7 +560,8 @@
         <td class="num" title="${ok ? esc(localAmt(a.circulating, a.peg_currency)
           + (a.supply_basis === "onchain" ? " · 발행사 공식 컨트랙트 totalSupply 기준" : "")) : ""}">${ok ? "$" + usdC(a.mcap_usd) + wonSub(a.mcap_usd) : "—"}</td>
         <td class="num">${ok ? shareTxt(a.share, a.mcap_usd) : "—"}</td>
-        <td class="num t-${g}"${thin ? ' title="유통액이 작아 가격 신뢰도가 낮습니다 — 등급 미부여"' : ""}>${
+        <td class="num t-${g}" title="${esc(thin ? "유통액이 작아 가격 신뢰도가 낮습니다 — 등급 미부여"
+          : ok ? ("자기 통화 기준 편차" + watchSrcTxt(a)) : "")}">${
           ok && a.dev_bp_local != null ? signed(a.dev_bp_local, 1) + (thin ? "*" : "") : "—"}</td>
         <td class="num">${ok ? signed(a.chg_7d, 1, "%") : "—"}</td>
         <td class="num t-${ok ? a.grade_redemption : "unknown"}">${ok ? signed(a.chg_30d, 1, "%") : "—"}</td>
@@ -622,6 +634,7 @@
     }
     setOpt("ap-peg", isW && a.price_local != null
       ? `${(CUR_SIGN[a.peg_currency] || "")}${a.price_local.toFixed(4)} (${signed(a.dev_bp_local, 1)}bp)`
+        + watchSrcTxt(a)
       : "");
     setOpt("ap-chain", isW ? chainMix(a) : "");
     {

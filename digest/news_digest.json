@@ -1,166 +1,105 @@
 {
   "schema": 1,
-  "written_at": "2026-10-16T08:08:00+09:00",
+  "written_at": "2026-10-17T09:00:00+09:00",
   "window": {
-    "from": "2026-10-15T07:00:00+09:00",
-    "to": "2026-10-16T07:00:00+09:00"
+    "from": "2026-10-16T07:00:00+09:00",
+    "to": "2026-10-17T07:00:00+09:00"
   },
   "author": "Claude(매일 자동 점검)가 공개 기사·발표를 읽고 작성",
-  "headline": "국내에서는 금융위원회가 디지털자산기본법(원화 스테이블코인 근거법) 처리에 '시간이 다소 걸린다'는 입장을 냈다는 보도와 함께, 국정감사에서 원화 스테이블코인 준비자산에 주택저당증권(MBS)을 넣자는 제안에 주택금융공사 사장이 '단기 MBS는 적합하다'고 답했다는 보도가 나왔습니다. 해외에서는 미국 통화감독청장이 GENIUS Act 최종 시행규칙을 10월 말 전에 낼 것으로 본다고 했고, 스웨덴 중앙은행 총재는 외화 스테이블코인을 이유로 e-크로나 재검토를 주장했습니다. 시장에서는 마스터카드·BVNK 의 스테이블코인 결제 플랫폼 출시, 트럼프 전 고문 관련 회사가 테더에서 돈을 받았다는 WSJ 보도가 주목받았습니다.",
+  "headline": "국내 당국의 스테이블코인 공식 발표는 없었습니다. 해외에서는 러시아 정부가 재무장관 등 각료 3명을 루블 스테이블코인 A7A5 를 쓰는 결제회사 A7 의 이사회에 앉혔다는 로이터 보도가 나왔습니다(A7 은 10월 1일 미 재무부 제재 대상). 시장에서는 일본 3대 은행이 엔화 스테이블코인 공동 발행 실증을 마쳤다고 발표했고, 서클은 상반기 USDC 수익 배분을 공개하면서 신흥국 40여 곳 진출 계획을 밝혔습니다. 비자는 USDC 로 국경 간 송금 자금을 미리 채워 두는 서비스를 상용화했습니다.",
   "sections": [
     {
       "category": "reg_kr",
       "label": "국내 당국",
-      "items": [
-        {
-          "title": "금융위 \"디지털자산기본법, 다소 시간 소요\" — 연내 처리 난항 보도",
-          "summary": "금융위원회가 원화 스테이블코인 발행 근거를 담을 디지털자산기본법 처리에 시간이 더 걸린다는 입장을 밝혀 연내 국회 통과가 어렵다는 보도입니다. 같은 날 다른 매체도 이 법과 금융회사 지배구조 개선안 등이 줄줄이 해를 넘길 수 있다고 짚었습니다.",
-          "why": "국내 원화 스테이블코인은 근거법이 없어 발행·인가 틀이 비어 있는 상태가 길어집니다. 그동안 국내 원화마켓에서는 달러 스테이블코인(USDT·USDC 하루 거래대금 약 3,700억 원)과 해외 발행 원화 토큰(KRWQ 등)이 공백을 메우는 구도가 이어질 수 있습니다.",
-          "published": "2026-10-14T23:29:19+00:00",
-          "confidence": "보도 기준, 1차 출처 미확인",
-          "sources": [
-            {
-              "name": "이데일리",
-              "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxQTFhqQlc1VGVrb0VpdnZkLVF2dWJUbENFbncyR29GNUZmUlAzMGQ5RTZkRUo2X2t6V0VOeUZ5SWpweE44aEJySDVSczAwU2x1MGFGMXJ1aVBGSk1vLW8xTF9FTmVvX0E5Z21rRmdqdlNMQUUtbmtiRlUwOGNDMWhFMQ?oc=5"
-            },
-            {
-              "name": "서울파이낸스",
-              "url": "https://news.google.com/rss/articles/CBMiakFVX3lxTE93VGM3V05lMEp5MVFpc3JCRlNYU01rU0VQc2lrbjYzUVpCVjRnUTh2RllHblVMLUVrNmhWeDBvWVlZRk5zd1ZUTExISmhlMnpDakYzLTZPZ0taMzJQNklRQ2xhMzU5YjBjVHc?oc=5"
-            }
-          ]
-        },
-        {
-          "title": "국정감사: 원화 스테이블코인 준비자산에 MBS 포함 제안 — 주금공 사장 \"단기 MBS 적합\" 보도",
-          "summary": "국회 정무위원회 민병덕 의원이 원화 스테이블코인 준비자산(발행액을 뒷받침하려고 쌓아 두는 자산)에 주택저당증권(MBS)을 넣자고 제안했고, 한국주택금융공사 사장이 만기가 짧은 MBS 는 적합하다는 취지로 답했다는 보도입니다.",
-          "why": "MBS 는 국채보다 시장 유동성이 낮고 금리가 오르면 만기가 늘어나는(조기상환 감소) 성질이 있어, 대량 상환 때 바로 팔아 현금을 마련하기 어렵습니다. 미국 GENIUS Act 의 적격 준비자산(현금·단기 국채·환매조건부채권 등)에도 MBS 는 들어 있지 않아, 국내 설계가 해외 기준보다 느슨해지는지 지켜볼 대목입니다.",
-          "published": "2026-10-15T08:15:30+00:00",
-          "confidence": "보도 기준, 1차 출처 미확인",
-          "sources": [
-            {
-              "name": "뉴스웍스",
-              "url": "https://www.newsworks.co.kr/news/articleView.html?idxno=856650"
-            },
-            {
-              "name": "서울경제",
-              "url": "https://www.sedaily.com/article/20102203"
-            },
-            {
-              "name": "블록미디어",
-              "url": "https://www.blockmedia.co.kr/archives/1152090"
-            }
-          ]
-        }
-      ],
-      "empty_note": ""
+      "items": [],
+      "empty_note": "10월 16일 07시~17일 07시(한국 시각) 사이 금융위원회·금융감독원·한국은행의 스테이블코인 관련 공식 발표는 확인되지 않았습니다. 디지털자산기본법이 1년째 국회에 묶여 있다는 분석 기사와 디지털자산거래소 협의체(DAXA)의 과세 관련 입장문이 있었지만, 당국 발표가 아니고 본문을 확인하지 못해 넣지 않았습니다."
     },
     {
       "category": "reg_global",
       "label": "해외 당국·중앙은행",
       "items": [
         {
-          "title": "미 통화감독청장 \"GENIUS Act 최종 시행규칙, 10월 말 전 발표 예상\" — 보도",
-          "summary": "미국 통화감독청(OCC) 청장이 스테이블코인법(GENIUS Act)의 최종 시행규칙을 이달 말 전에 내놓을 것으로 본다고 말했다는 보도입니다. 8월에는 11월까지 확정하겠다고 했던 일정이 조금 당겨진 셈입니다.",
-          "why": "최종 규칙이 나오면 미국 내 발행사의 준비자산·상환·자본 기준이 확정되어, 국내 원화 스테이블코인 준비자산 논의(위 MBS 제안 등)의 비교 기준이 됩니다.",
-          "published": "2026-10-15T15:35:30+00:00",
+          "title": "러시아, 재무·에너지장관과 제1부총리를 결제회사 A7 이사회에 선임 — A7A5(루블 스테이블코인) 운영사",
+          "summary": "러시아 정부 공보실 발표를 인용한 로이터 보도로, 실루아노프 재무장관·치빌료프 에너지장관·만투로프 제1부총리가 A7 이사회에 들어갔습니다. A7 은 국방산업 은행 PSB 가 만든 무역결제 회사로, PSB 예금으로 뒷받침되는 루블 스테이블코인 A7A5 를 결제에 씁니다.",
+          "why": "미 재무부가 10월 1일 제재한 회사에 각료가 직접 들어간 것은, 제재를 피하는 결제망을 국가가 공식 뒷받침한다는 신호로 읽힙니다. A7A5 는 대시보드 기준 발행잔액 약 $4.6억(공식 컨트랙트 392억 개 기준)이어서, 국내 가상자산사업자의 관련 주소 노출·거래 점검 필요성이 커집니다.",
+          "published": "2026-10-15T11:47:00+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
             {
-              "name": "블루밍비트",
-              "url": "https://news.google.com/rss/articles/CBMiUEFVX3lxTE45R0I2bDBRZ3JDVHkwQUh6cmhEMzdNZ2JQS19McUtCYkJ5S0RLX2tVbUtDckxkOGpNMjZCeEhNTHpPeHFPWGRSUmxvRmltSmx3?oc=5"
+              "name": "The Moscow Times(로이터 전재)",
+              "url": "https://www.themoscowtimes.com/2026/10/15/russian-ministers-join-board-of-key-trade-payments-firm-a7-a93988"
             },
             {
-              "name": "The Block(8월 일정 보도, 배경)",
-              "url": "https://www.theblock.co/news/regulation/2026-08-19-occ-races-to-finalize-genius-act-stablecoin-rules-by-november-412240"
-            }
-          ]
-        },
-        {
-          "title": "스웨덴 중앙은행 총재 \"e-크로나 다시 검토할 때\" — 외화 스테이블코인 확산 우려",
-          "summary": "스웨덴 중앙은행(Riksbank) 총재가 디지털 유로와 달러 스테이블코인이 퍼지는 상황에서 중앙은행 디지털화폐(e-크로나) 도입을 다시 조사해야 한다고 말했다는 보도입니다. 국내 매체는 '외화 스테이블코인이 자국 통화를 위협한다'는 취지로 전했습니다.",
-          "why": "소규모 개방경제 중앙은행이 외화 스테이블코인을 통화주권 위험으로 공개 언급한 사례입니다. 원화도 같은 처지여서, 국내 원화마켓의 달러 스테이블코인 거래 비중을 볼 때 참고가 됩니다.",
-          "published": "2026-10-15T19:20:11+00:00",
-          "confidence": "보도 기준, 1차 출처 미확인",
-          "sources": [
-            {
-              "name": "Sweden Herald",
-              "url": "https://swedenherald.com/article/theden-time-to-investigate-ekrona"
-            },
-            {
-              "name": "Cointelegraph(전재)",
-              "url": "https://coinspectator.com/cointelegraph/2026/10/15/sweden-revisits-digital-krona-as-ecb-advances-digital-euro-plans/"
-            },
-            {
-              "name": "블록미디어",
-              "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5HMnF4VXAxRjV1bTAxVUlOa3pTLWdDaWIxeGpuRHRqNms5eTFTWkV3MXB2VnhjelFmQU41VGlENEJCWk0zcU1QalY1Z0FDZWxsZkhxVllUc1g?oc=5"
-            },
-            {
-              "name": "Riksbank e-krona 안내",
-              "url": "https://www.riksbank.se/en-gb/payments--cash/e-krona/"
+              "name": "Payment Expert",
+              "url": "https://paymentexpert.com/2026/10/15/a7-russian-ministers-supervisory/"
             }
           ]
         }
-      ],
-      "empty_note": ""
+      ]
     },
     {
       "category": "market",
       "label": "발행사·시장",
       "items": [
         {
-          "title": "마스터카드·BVNK, 법정화폐와 스테이블코인을 한 API 로 잇는 'Global Money Platform' 출시",
-          "summary": "마스터카드가 올해 인수한 BVNK 와 함께, 기업이 법정화폐와 스테이블코인 잔액을 한 연결 창구로 받고 보내며 카드 결제에도 쓸 수 있게 하는 플랫폼을 내놓았다는 보도입니다. 마스터카드 누리집에 같은 제목의 보도자료가 게시돼 있습니다.",
-          "why": "카드 네트워크가 스테이블코인을 일반 결제 흐름에 직접 넣으면 스테이블코인이 거래소 밖 결제·송금으로 퍼지는 속도가 빨라집니다. 국경 간 지급과 외환 관리 측면의 감독 대상이 넓어질 수 있습니다.",
-          "published": "2026-10-15T20:08:43+00:00",
-          "confidence": "보도 기준, 1차 출처 미확인(보도자료 제목만 확인)",
+          "title": "일본 3대 은행, 엔화 스테이블코인 공동 발행 실증 완료 — 미쓰비시상사 해외 거점 간 결제",
+          "summary": "미즈호·MUFG·SMBC 가 공동 위탁자, 미쓰비시UFJ신탁이 수탁자가 되는 신탁 방식으로 엔화 스테이블코인을 발행·이전·상환하는 실증(7월 17~23일)을 마쳤다고 10월 16일 공동 발표했습니다. 금융청 결제혁신 프로젝트 지원 과제이며, 2026 회계연도 안에 실거래를 시작하는 것이 목표입니다.",
+          "why": "여러 은행이 한 코인을 함께 발행하는 모델로, 국내 '은행 지분 51%' 논쟁의 직접 비교 사례입니다. 대시보드 감시목록의 JPYC(자금이동업자 발행)와 달리 예금을 담보로 하고 은행이 확인한 이용자 사이에서만 돌게 설계 중이라, 같은 엔화 코인이라도 감독 틀이 다릅니다.",
+          "published": "2026-10-16T05:07:00+00:00",
+          "confidence": "1차 출처 확인",
           "sources": [
             {
-              "name": "Mastercard 보도자료",
-              "url": "https://www.mastercard.com/global/en/news-and-trends/press/2026/october/mastercard-and-bvnk-launch-global-money-platform-to-power-a-mult.html"
+              "name": "PR TIMES(발행 은행·TIS 공동 보도자료)",
+              "url": "https://prtimes.jp/main/html/rd/p/000000384.000036656.html"
             },
             {
-              "name": "PYMNTS",
-              "url": "https://www.pymnts.com/partnerships/2026/mastercard-and-bvnk-unite-fiat-and-stablecoins-in-global-money-platform/"
+              "name": "あたらしい経済",
+              "url": "https://www.neweconomy.jp/posts/617525"
             }
           ]
         },
         {
-          "title": "WSJ \"트럼프 전 가상자산 고문 관련 회사, 테더에서 약 630만 달러 받아\" — 이해충돌 논란 보도",
-          "summary": "전 백악관 가상자산위원회 책임자 보 하인스가 공동 소유한 회사가 테더와의 거래에서 약 630만 달러를 받았으며 그가 스테이블코인법(GENIUS Act) 통과를 도운 뒤 이익을 얻었다고 월스트리트저널이 보도했고, 국내외 매체가 이를 이해충돌 논란으로 전했습니다.",
-          "why": "세계 최대 발행사(USDT 점유율 59.8%)와 입법 관계자의 이해관계 문제는 미국 시행규칙·인가 과정의 정치적 부담으로 이어질 수 있습니다. 사실관계는 원보도(WSJ, 유료)를 확인하지 못했습니다.",
-          "published": "2026-10-15T09:19:28+00:00",
+          "title": "서클, 상반기 USDC 수익 배분 공개 — 매출 약 14억 달러 중 8.19억 달러가 유통 파트너·거래 비용",
+          "summary": "서클이 블로그에서 상반기 매출 약 14억 달러 가운데 약 8.19억 달러를 유통 파트너와 거래 비용으로, 약 4.73억 달러를 인프라·준법·개발에 썼고 순이익은 매출 1달러당 약 7센트라고 밝혔다는 보도입니다. USDC 온체인 거래액은 36조 달러를 넘었다고 했습니다.",
+          "why": "스테이블코인 매출은 대부분 준비자산 이자이고, 그 절반 이상이 거래소 등 유통 파트너에게 넘어간다는 뜻입니다. 국내 원화 스테이블코인 설계에서 이용자 이자 지급 금지를 유통사 보상으로 우회하는 문제, 금리 하락 때 발행사 수익성이 약해지는 문제를 함께 봐야 합니다.",
+          "published": "2026-10-16T14:58:29+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
             {
-              "name": "Cryptonews(WSJ 인용)",
-              "url": "https://news.google.com/rss/articles/CBMiVkFVX3lxTFBFaGJDUHQ5VjRzRExNWG9aVFI0T0RodGt0ODh4RndTS21QQl8za3hqSTRYaWJ4OWx4eXEwQVhRUnJLaDh2dXNCbTh3dW5zQkducjZGbmdR?oc=5"
-            },
-            {
-              "name": "블록미디어",
-              "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE45dUt2SkR4Tk4zRlZaVkFYMHFtUVNteDRQYWIyT2cySlozeVFQOHAxQ2FsQWIwaFdsZHRmamVIQkxlWUVFMlF5TVhuQ0RfWkROeDYtYUxrS0w?oc=5"
+              "name": "The Block",
+              "url": "https://www.theblock.co/news/business/2026-10-16-circle-usdc-revenue-split-partners-418826"
             }
           ]
         },
         {
-          "title": "리플 RLUSD, 미 크로스리버은행 결제 도입·DriveWealth 유럽 증권 정산 연동 — 보도",
-          "summary": "리플의 달러 스테이블코인 RLUSD 를 미국 크로스리버은행이 결제에 도입하고, 증권 중개 인프라 업체 DriveWealth 가 유럽에서 RLUSD 로 증권 대금을 정산하는 연동을 시작한다는 보도가 이어졌습니다.",
-          "why": "RLUSD 는 국내 4개 거래소 원화마켓에 상장돼 있고 최근 24시간 전 세계 거래의 약 1.4%가 국내 원화마켓에서 일어났습니다(대시보드). 은행·증권 정산 쓰임이 늘면 발행량(현재 $24.1억)과 국내 거래가 함께 움직이는지 볼 만합니다.",
-          "published": "2026-10-15T20:14:53+00:00",
+          "title": "서클 CEO \"신흥·개도국 40여 곳 진출\" — 대상 국가는 비공개",
+          "summary": "제러미 알레어 서클 최고경영자가 로이터 인터뷰에서 동남아·중남미·중동 등 신흥국 40~50곳으로 USDC 사업을 넓히겠다고 밝혔다는 보도입니다. 구체적 국가와 일정은 밝히지 않았습니다.",
+          "why": "달러 스테이블코인이 자국 통화를 대신하는 '통화 대체' 위험이 큰 나라를 겨냥한 확장입니다. 한국이 대상인지는 알 수 없지만, 근거법이 없는 동안 국내 원화마켓의 달러 스테이블코인 거래(10월 16일 하루 약 2,600억 원)가 커질 여지가 있다는 점에서 참고할 만합니다.",
+          "published": "2026-10-16T10:54:35+00:00",
           "confidence": "보도 기준, 1차 출처 미확인",
           "sources": [
             {
-              "name": "Pluang",
-              "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPLWNJeVJUQXpKcEZEZmJSV01KMFpPaFhzU0FlMTRaSm1KWDZvSnJSZzVmU183Ujc1LTFvUWlPVGlGX0NfVGZSNUNqX2ZKMFI4Y2Z2WTJEVktMQlJTYjBsNThiNV8wMWJrTXhDYTBtVGJRUXBCakZkU2pqZXZuVDJUeXY4M0puRzFMNjZ1YVZIbjFNRDlrV2gzQzMxcF9yUQ?oc=5"
-            },
+              "name": "CoinDesk(로이터 인터뷰 인용)",
+              "url": "https://www.coindesk.com/business/2026/10/16/circle-targets-40-new-markets-as-stablecoin-demand-grows-globally"
+            }
+          ]
+        },
+        {
+          "title": "비자, USDC 로 해외 송금 자금을 미리 채우는 서비스 상용화(Inyo Global)",
+          "summary": "비자가 기업이 USDC 로 Visa Direct 해외 지급 자금을 거의 실시간으로, 은행 영업시간 밖에도 채워 넣을 수 있는 서비스를 시험 단계에서 상용 단계로 옮겼고, 첫 처리사는 Inyo Global 이라는 보도입니다.",
+          "why": "카드 결제망이 국경 간 송금 정산에 스테이블코인을 쓰기 시작하면 외국환 거래 신고·모니터링 밖에서 움직이는 자금이 늘 수 있습니다. 국내 송금업자·카드사가 같은 구조를 쓸 때의 외환 감독 기준을 미리 볼 필요가 있습니다.",
+          "published": "2026-10-16T11:25:12+00:00",
+          "confidence": "보도 기준, 1차 출처 미확인",
+          "sources": [
             {
-              "name": "Yahoo Finance",
-              "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPYmZBQlFYSk5jYzQ0V2xLVlNRTXYwZ2k1VExORzdYN1pxSnFMQmNlY2JQTk9WWDkxNnF5aHNsS0U2SGRGcWN3RUptOUVzS1NkekpYWmtacGZ5Yzg5SEt1QjBzd2Z3eDdLRnc1Y1NuSVp6WjRVTER5ZTA4VzJDOEhjLXk1SlhadWdXVEhEd3VEVmtTUDBVV3BpU1M4TFllNW1QVkhtdw?oc=5"
+              "name": "The Block",
+              "url": "https://www.theblock.co/news/business/2026-10-16-visa-direct-moves-usdc-prefunding-into-commercial-production-with-inyo-global-418802"
             }
           ]
         }
-      ],
-      "empty_note": ""
+      ]
     }
   ],
-  "dashboard_link": "대형 종목의 디페그(가격 이탈) 뉴스는 없었습니다. 대시보드 기준(10월 15일 21:44 UTC) 총 발행잔액은 $307.0B(하루 −$8.1억, 30일 +0.64%)이고, 페그 경보는 소형 AP USDA(−124bp)·Resupply reUSD(−105bp) 2종뿐입니다. USDT 김치프리미엄은 +0.41%로 하루 전(+1.44%)보다 크게 낮아졌습니다. 국내 원화마켓 USDT·USDC 거래대금은 10월 15일 3,738억 원으로 전날(2,661억 원)보다 40% 늘었습니다. 테더 동결은 10월 15일 29건입니다. FDUSD 는 9월 준비금 보고서가 평소 일정보다 4일 늦었고(발행사 투명성 페이지 기준 8월분이 최신), 10월 14~15일 −32bp 까지 밀렸다가 복귀했습니다.",
-  "caveats": "Claude 가 공개 보도와 발표를 읽고 쓴 요약이며 원문과 다를 수 있습니다. 이번 회차는 기사 본문을 직접 열지 못한 항목이 많아(제목·검색 요약 기준) 모두 '보도 기준'으로 표시했습니다. EBA 의 USDC '중요 전자화폐토큰' 지정은 10월 14일 발표로 전날 요약에 실었습니다. 여당의 가상자산 과세 2029년 유예 법안 발의 보도(연합뉴스)는 스테이블코인과 직접 관련이 적어 넣지 않았습니다. 개인이 공개 데이터로 만든 참고 자료이며 어떠한 기관의 공식 견해도 아닙니다."
+  "dashboard_link": "대형 종목 디페그(가격 이탈) 뉴스는 없었습니다. 대시보드 기준(10월 16일 21:38 UTC) 총 발행잔액은 $306.6B(하루 −$5.8억, 30일 +0.80%), 페그 경보는 시장 비중 0.1% 미만 소형 3종(AP USDA −322bp, reUSD −108bp, apxUSD −104bp)입니다. USDT 김치프리미엄은 +1.06%로 하루 전(+0.41%)보다 올랐는데, 주로 원/달러 고시 환율이 1,342.5원에서 1,336.8원으로 내린 영향입니다(BTC·ETH 프리미엄도 1.2~1.3%). 국내 원화마켓 USDT·USDC 거래대금은 10월 16일 2,604억 원으로 전날(3,805억 원)보다 32% 줄었습니다. RLUSD 는 24시간 전 세계 거래의 7.8%가 국내(대부분 코인원)에서 일어났습니다. 테더 동결은 10월 16일 10건입니다. A7A5 는 공식 컨트랙트 기준 약 392억 개($4.6억)로 대시보드에 반영돼 있습니다.",
+  "caveats": "Claude 가 공개 보도와 발표를 읽고 쓴 요약이며 원문과 다를 수 있습니다. 일본 3대 은행 실증은 발행 은행 공동 보도자료(PR TIMES)를 직접 읽었고, 서클·비자 항목은 보도 본문을 읽었으나 서클 블로그·비자 보도자료 원문은 열지 못했습니다. A7 이사회 선임은 10월 15일(현지) 발표로 이번 창보다 조금 앞서지만 직전 요약에서 빠져 넣었습니다. 코인베이스·마케타 스테이블코인 카드, 스테이블코인 송금 수수료 조사 보도는 본문을 확인하지 못해 넣지 않았습니다. 개인이 공개 데이터로 만든 참고 자료이며 어떠한 기관의 공식 견해도 아닙니다."
 }
