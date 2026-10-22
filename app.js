@@ -2314,7 +2314,9 @@
     const low = r.rows.filter((x) => x.reserves && x.reserves.eligible_pct < 90);
     setLead("reg", `비교한 ${bold(r.rows.length + "종")} 가운데 EU MiCA 전자화폐토큰으로 등재된 종목은 ${mica.length ? mica.map(bold).join("·") : bold("없음")}입니다`
       + (low.length ? `. 미국 GENIUS Act 적격 자산이 아닌 준비자산(금·비트코인·담보대출 등)을 10% 넘게 가진 종목은 ${low.map((x) => bold(x.symbol) + `(적격 ${x.reserves.eligible_pct}%)`).join("·")}입니다.` : "."));
-    $("#reg-note").textContent = `${r.meta.note}. EU 칸은 ESMA 임시 MiCA 등록부(EMT 발행인, ${r.meta.esma_ok ? r.meta.esma_rows + "행" : "이번 회차 받지 못해 직전 값"})에서 매일 자동으로 확인합니다. `
+    $("#reg-note").textContent = `${r.meta.note}. EU 칸은 ESMA 임시 MiCA 등록부(EMT 발행인, ${r.meta.esma_ok ? r.meta.esma_rows + "행"
+      : "이번 회차 받지 못해 " + (r.meta.esma_last_ok_at ? fmtTime(r.meta.esma_last_ok_at) + " 수집 값" : "직전 값(마지막 수집 시각 미확인)")
+        + (r.meta.esma_error ? ` — ${r.meta.esma_error.replace(/^HTTP Error /, "HTTP ")}` : "")})에서 매일 자동으로 확인합니다. `
       + `${r.meta.eligible_rule}. 국내 디지털자산기본법이 시행돼 원화 스테이블코인이 발행되면 감시목록(etl/watchlist.json)에 인가 정보(kr_regime)를 적는 즉시 이 표에 들어옵니다.`;
   }
 
@@ -2662,7 +2664,10 @@
       ? `최근 ${n.meta.window_hours || 24}시간 관련 항목 ${bold(items.length + "건")} — 국내외 당국 발표 ${bold(regN + "건")}, 보도 ${bold((items.length - regN) + "건")}.`
       : "");
     const feeds = (n.meta && n.meta.feeds) || [];
-    const bad = feeds.filter((f) => !f.ok).map((f) => f.name);
+    // 실패가 이어진 피드는 언제부터인지 함께 적는다(일시 오류와 장기 차단을 구분)
+    const bad = feeds.filter((f) => !f.ok).map((f) => f.name
+      + (f.failing_since === null ? " 이전 회차부터 계속"
+        : f.failing_since && f.failing_since < n.meta.generated_at ? ` ${fmtTime(f.failing_since).replace(/^\d{4}\./, "").replace(" KST", "")}부터` : ""));
     $("#news-basis").textContent = `수집 ${fmtTime(n.meta.generated_at)} · 피드 ${feeds.length - bad.length}/${feeds.length}곳 응답`
       + (bad.length ? ` (응답 없음: ${bad.join(", ")})` : "")
       + " · 피드 목록은 etl/news_feeds.json";
