@@ -2343,7 +2343,11 @@
     if (rows.length) {
       $("#xc-tbl-wrap").hidden = false;
       $("#xc-tbl tbody").innerHTML = rows.map((r) => {
-        const chains = (r.chains || []).map((c) => c.onchain != null
+        // scope=global: 본 체인 컨트랙트 totalSupply 가 전 체인 합계(브리지 잠금 방식)라 원천 전체와 비교
+        const chains = (r.chains || []).map((c) => c.onchain_global != null
+          ? `${esc(c.chain)} ${big(c.onchain_global)}(전 체인 합계) / 원천 전체 ${big(r.defillama_total)}`
+          : c.status === "scaled" ? `${esc(c.chain)} 같은 배율 (원천 ${big(c.defillama)})`
+          : c.onchain != null
           ? `${esc(c.chain)} ${big(c.onchain)} / ${big(c.defillama)}`
           : `${esc(c.chain)} ${c.status === "not_configured" ? "미설정" : "실패"} (원천 ${big(c.defillama)})`).join(" · ");
         const g = XC_GRADE[r.verdict] || "unknown";
