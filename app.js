@@ -2160,6 +2160,80 @@
     el.innerHTML = facts.map((f) => `<li>${f}</li>`).join("");
   }
 
+  // ── 감시목록 종목(JPYC 등)의 원화마켓 일별 거래 ─────────────────────
+  // krw_volume.json 의 watch_daily(국내 원화마켓에 상장된 감시목록 종목만). USDT·USDC 합계와 섞지 않는다.
+  const KVW_UNIT = { JPY: "1엔", KRW: "1원", USD: "1달러", EUR: "1유로" };
+  function renderKvWatch(w, share, snap) {
+    const box = $("#kvw");
+    if (!box) return;
+    const assets = Object.entries((w && w.assets) || {}).filter(([, a]) => a && (a.daily || []).length);
+    if (!assets.length) { box.hidden = true; return; }
+    box.hidden = false;
+    const exName = (KV.exName && Object.keys(KV.exName).length) ? KV.exName : {};
+    const rows = (snap && snap.watchlist && snap.watchlist.rows) || [];
+    // 소형 종목이라 억 단위 반올림(krwK)은 너무 거칠다 — 억은 소수 한 자리, 1억 미만은 만 원 단위
+    const krwS = (v) => v == null ? "—" : v <= 0 ? "0" : v >= 1e12 ? (v / 1e12).toFixed(2) + "조"
+      : v >= 1e8 ? (v / 1e8).toFixed(1) + "억" : v >= 1e4 ? Math.round(v / 1e4).toLocaleString("ko-KR") + "만" : Math.round(v) + "";
+    const krw = (v) => v == null ? "—" : "₩" + krwS(v);
+    const won = (v) => v == null ? "—" : v.toLocaleString("ko-KR", { minimumFractionDigits: 2, maximumFractionDigits: 4 }) + "원";
+    $("#kvw-body").innerHTML = assets.map(([sym], i) =>
+      `<div class="kvw-asset"><p class="kvw-lead" id="kvw-lead-${i}"></p>
+        <div id="chart-kvw-${i}" class="chart-plot"></div>
+        <div class="tablewrap"><table class="kvw-tbl" id="kvw-tbl-${i}"><caption class="sr">${esc(sym)} 최근 7일 원화마켓 거래</caption>
+          <thead><tr><th scope="col">날짜</th><th scope="col" class="num">거래대금</th><th scope="col" class="num">원화 종가</th></tr></thead>
+          <tbody></tbody></table></div></div>`).join("");
+    assets.forEach(([sym, a], i) => {
+      const m = a.summary || {};
+      const cur = a.peg_currency || "";
+      const exs = (a.exchanges || []).map((e) => exName[e] || e).join("·");
+      const sh = share && share.assets && share.assets[sym];
+      const wr = rows.find((r) => String(r.symbol || "").toUpperCase() === sym);
+      const parts = [];
+      parts.push(`<b>${esc(sym)}</b>(${esc(exs)} 원화마켓) — 최근 완결일 ${esc(m.last_full_date || "—")} 거래대금 <b>${krw(m.last_full_krw)}</b>`
+        + (m.avg30_krw != null ? `, 최근 ${Math.min(30, m.days || 0)}일 일평균 ${krw(m.avg30_krw)}` : "")
+        + (m.chg30_pct != null ? `(직전 30일 대비 ${signed(m.chg30_pct, 1, "%")})` : "") + "."
+        + (m.history_complete === false && m.first_date ? ` 일봉은 ${esc(m.first_date)}부터 ${m.days}일치입니다(그 전에는 거래 없음)` : "")
+        + (() => {
+          // 이력이 짧으면 차트는 최근 30일만 그리고, 그 앞(거래 시작 직후)은 평균만 문장으로 남긴다
+          const f = (a.daily || []).filter((d) => !d.partial);
+          if (m.history_complete !== false || f.length <= 30) return m.history_complete === false && m.first_date ? "." : "";
+          const early = f.slice(0, -30);
+          const avg = early.reduce((x, d) => x + d.krw, 0) / early.length;
+          return ` — 거래 시작 직후 ${early.length}일(${esc(early[0].date)}~${esc(early[early.length - 1].date)})은 일평균 ${krw(avg)}였습니다(차트는 최근 30일).`;
+        })());
+      if (sh && sh.share_pct != null)
+        parts.push(`최근 24시간 국내 원화마켓 거래는 전 세계 ${esc(sym)} 거래대금의 <b>${sh.share_pct.toFixed(1)}%</b>입니다.`);
+      if (m.close_dev_bp != null)
+        parts.push(`원화 종가 ${won(m.close_krw)}는 ${esc(KVW_UNIT[cur] || "1 " + cur)}의 원화 값(${won(m.krw_per_unit)}, ${esc(w.fx_date || "")} 기준환율)보다 `
+          + `${signed(m.close_dev_bp, 1)}bp 벗어나 있습니다`
+          + (m.close_dev_bp_ex_premium != null
+            ? `. 원화 호가에 섞인 국내 웃돈(같은 환율 기준 USDT 김치프리미엄 ${signed(m.usdt_premium_pct, 2, "%")})을 걷어내면 <b>${signed(m.close_dev_bp_ex_premium, 1)}bp</b>입니다`
+            : "")
+          + (wr && wr.dev_bp_local != null ? ` — 달러 가격을 거친 계기판 편차는 ${signed(wr.dev_bp_local, 1)}bp.` : "."));
+      $("#kvw-lead-" + i).innerHTML = parts.join(" ");
+      const full = (a.daily || []).filter((d) => !d.partial);
+      const cut = m.history_complete === false ? full.slice(-30) : full.slice(-90);
+      lineChart($("#chart-kvw-" + i), cut.map((d) => ({ t: kvToT(d.date), v: d.krw })), {
+        height: 110, hMin: 150, hMax: 220, color: "var(--accent)", label: `${sym} 원화마켓 일별 거래대금`,
+        interactive: true, fmt: (x) => krwS(x), empty: "표시할 일별 거래가 아직 없습니다.",
+        tipRows: (p) => {
+          const d = full.find((r) => r.date === isoDate(p.t));
+          const out = [[`${sym} 거래대금`, krw(p.v), "is-main"]];
+          if (d) Object.entries(d.close || {}).forEach(([e, c]) => out.push([`${exName[e] || e} 종가`, won(c), ""]));
+          return out;
+        },
+      });
+      $(`#kvw-tbl-${i} tbody`).innerHTML = full.slice(-7).reverse().map((d) => {
+        const closes = Object.values(d.close || {});
+        return `<tr><td>${esc(d.date)}</td><td class="num">${krw(d.krw)}</td><td class="num">${closes.length ? closes.map(won).join(" / ") : "—"}</td></tr>`;
+      }).join("");
+    });
+    const bad = Object.entries((w && w.status) || {}).filter(([, v]) => v !== "ok").map(([k]) => k);
+    $("#kvw-note").textContent = "원화 종가 편차 = 원화 종가 ÷ (그 통화 1단위의 원화 값) − 1. 원화 값은 중앙은행 기준환율(Frankfurter)의 달러 교차환율이라 "
+      + "종가와 시각이 달라 수십 bp 는 시차일 수 있습니다. 원화 호가에는 국내 시장 전체의 웃돈(김치프리미엄)이 섞이므로, 외화 페그 종목은 같은 환율로 잰 USDT 프리미엄을 걷어낸 값이 페그 판단에 더 가깝습니다. 상장 종목은 거래지원 목록(listings.json)을 따라 자동으로 바뀝니다."
+      + (bad.length ? ` 이번 수집 실패: ${bad.join(", ")}.` : "");
+  }
+
   // ── 디페그 사건 기록 ───────────────────────────────────────
   function renderDepeg(d) {
     if (!d || !((d.open || []).length || (d.closed || []).length)) return;
@@ -3110,6 +3184,7 @@
         const kvj = await r.json();
         KRW_SHARE = kvj.share24h || null; // 표의 '국내 거래소' 칸은 아래 거래지원 목록을 읽은 뒤 다시 그린다
         renderKrwVolume(kvj, snap.watchlist && snap.watchlist.meta && snap.watchlist.meta.fx_rates && snap.watchlist.meta.fx_rates.KRW);
+        renderKvWatch(kvj.watch_daily, kvj.share24h, snap);
       }
     } catch (e) {
       console.info("krw_volume.json 없음 — 원화 거래대금 생략");

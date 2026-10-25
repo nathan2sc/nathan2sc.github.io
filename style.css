@@ -1393,3 +1393,11 @@ html[data-theme="dark"] .src-card a{color:#8fb8dd}
 #br-chain-tbl td,#br-tbl td{vertical-align:top}
 .cf-nw{white-space:nowrap}
 .br-rest td{color:var(--mid)}
+/* 감시목록 종목 원화마켓 거래(2026-10-26) */
+.kvw-panel{margin-top:1.4rem}
+.kvw-intro{margin:.2rem 0 .8rem;color:var(--mid);font-size:.85rem;line-height:1.6}
+.kvw-asset+.kvw-asset{margin-top:1.4rem;padding-top:1.2rem;border-top:1px solid var(--rule-soft)}
+.kvw-lead{margin:0 0 .6rem;font-size:.9rem;line-height:1.65}
+.kvw-lead b{color:var(--ink)}
+.kvw-tbl{width:100%;margin-top:.6rem;font-size:.84rem}
+.kvw-tbl{min-width:0}
