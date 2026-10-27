@@ -2256,6 +2256,13 @@
     const dupName = (e) => (ids[String(e.symbol || "").toUpperCase()] || new Set()).size > 1 && e.name && e.name !== e.symbol;
     const symOf = (e) => dupName(e) ? `${e.symbol}(${e.name})` : e.symbol;
     const dur = (h) => h == null ? "—" : h >= 48 ? (h / 24).toFixed(1) + "일" : h + "시간";
+    // 이탈 중 발행잔액 변화(시작 → 마지막 관측). 5% 넘게 움직였을 때만 — 이탈한 채 빠져나가면 상환 압력(2026-10-28)
+    const supplyChg = (e) => {
+      if (!(e.start_mcap_usd > 0) || !(e.last_mcap_usd > 0)) return "";
+      const c = e.last_mcap_usd / e.start_mcap_usd - 1;
+      if (Math.abs(c) < 0.05) return "";
+      return `<span class="att-sub" title="${esc("사건 시작 발행잔액 $" + usd(e.start_mcap_usd) + " → 마지막 관측 $" + usd(e.last_mcap_usd))}">이탈 중 발행 ${signed(c * 100, 0, "%")}</span>`;
+    };
     const draw = () => {
       const all = btn.getAttribute("aria-pressed") === "true";
       const rows = [...(d.open || []), ...(d.closed || [])]
@@ -2267,7 +2274,7 @@
         return `<tr>
           <td><span class="tsym">${esc(e.symbol)}</span>${dupName(e) ? `<span class="tname">${esc(e.name)}</span>` : ""}${e.systemic ? '<span class="att-sub">시장 영향 종목</span>' : ""}</td>
           <td>${esc(dt(e.started_at))}</td>
-          <td>${e.open ? `<span class="pill is-${g} t-${g}">진행 중</span><span class="att-sub">지금 ${signed(e.last_bp, 0, "bp")}</span>` : esc(dt(e.ended_at)) + (e.end_reason === "관측 중단" ? '<span class="att-sub">관측 중단</span>' : "")}</td>
+          <td>${e.open ? `<span class="pill is-${g} t-${g}">진행 중</span><span class="att-sub">지금 ${signed(e.last_bp, 0, "bp")}</span>` : esc(dt(e.ended_at)) + (e.end_reason && e.end_reason !== "복귀" ? `<span class="att-sub">${esc(e.end_reason)}</span>` : "")}${supplyChg(e)}</td>
           <td class="num">${dur(e.duration_h)}</td>
           <td class="num t-${g}" title="${esc("최대 시각 " + dt(e.peak_at) + (e.peak_mcap_usd ? " · 당시 발행잔액 $" + usd(e.peak_mcap_usd) : ""))}">${signed(e.peak_bp, 0, "bp")}</td>
           <td class="num">${e.runs || 1}회</td>
@@ -2284,7 +2291,7 @@
     setLead("dp", `진행 중인 이탈 ${bold((d.open || []).length + "건")}`
       + ((d.open || []).length ? ` — ${(d.open || []).slice(0, 3).map((e) => bold(symOf(e)) + `(최대 ${signed(e.peak_bp, 0, "bp")}, ${dur(e.duration_h)})`).join("·")}` : "")
       + `. ${since ? since + " 이후 " : ""}두 회차 이상 이어진 100bp 넘는 사건은 ${bold(big.length + "건")}입니다.`);
-    $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 2026-10-15 이전 기록은 저장소에 남은 과거 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
+    $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 과거 기록은 저장소에 남은 회차별 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외, 2026-10-28 이어 보기 규칙)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. '이탈 중 발행'은 사건 시작 때보다 발행잔액이 얼마나 줄거나 늘었는지(5% 이상만)입니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
   }
 
   // ── 이번 주 요약 ──────────────────────────────────────────
