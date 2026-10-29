@@ -2468,6 +2468,22 @@
     const od = e.overdue_days;
     return `<span class="att-sub">${od > 0 ? `예상일 ${od}일 지남` : `다음 ${esc(e.next_due_date.slice(5).replace("-", "/"))} 예상`}</span>`;
   }
+  // 드리프트: 같은 출처(원천의 보고서 기준일 값 → 현재)로 잰 값이 있으면 그것, 없으면 보고서 발행량 대비(옛 데이터 포함)
+  function attDrift(e) {
+    return e.drift_graded_pct != null ? e.drift_graded_pct : e.drift_pct;
+  }
+  function attDriftTip(e) {
+    if (e.drift_basis === "same_source" && e.source_at_report != null) {
+      return `같은 출처끼리 비교: 현재 ${Math.round(e.current_circulating).toLocaleString("en-US")} ÷ 원천(DefiLlama)의 ${e.source_at_report_date} 값 `
+        + `${Math.round(e.source_at_report).toLocaleString("en-US")} − 1. 보고서 발행량과 바로 비교하면 ${e.drift_pct != null ? signed(e.drift_pct, 1, "%") : "—"}`
+        + (e.basis_gap_pct != null ? ` — 그 차이는 기준일에 이미 있던 집계 범위 차이(${signed(e.basis_gap_pct, 1, "%")})입니다.` : ".");
+    }
+    return "현재 발행량 ÷ 보고서 발행량 − 1(원천의 기준일 값이 없어 보고서와 바로 비교)";
+  }
+  function attGapSub(e) {
+    if (e.basis_gap_pct == null || Math.abs(e.basis_gap_pct) < 1) return "";
+    return `<span class="att-sub">집계 차이 ${signed(e.basis_gap_pct, 1, "%")}</span>`;
+  }
   function renderAttestation(a) {
     if (!a || !a.entries || !a.entries.length) return;
     // 옛 형식 데이터(공표 주기·예상일 필드 없음)는 메타의 월간 환산값으로 본다.
@@ -2487,8 +2503,10 @@
     const toUsd = (v, e) => v == null ? null : e.reserves_currency === "EUR" ? (FX_EUR ? v / FX_EUR : null) : v;
     $("#attest-tbl tbody").innerHTML = rows.map((e) => {
       const ratio = e.reserves_total != null && e.reported_circulating ? e.reserves_total / e.reported_circulating * 100 : null;
+      const dg = attDrift(e);
+      const gapBig = e.basis_gap_pct != null && Math.abs(e.basis_gap_pct) >= ((a.meta.thresholds && a.meta.thresholds.basis_gap_watch_pct) || 5);
       const why = e.days_since >= e.breach_days ? "경과일 경보" : e.days_since >= e.watch_days ? "경과일 주의"
-        : e.grade !== "sound" ? "드리프트" : "";
+        : dg != null && Math.abs(dg) >= 3 ? "드리프트" : gapBig ? "집계 범위 차이" : e.grade !== "sound" ? "드리프트" : "";
       const cur = e.reserves_currency === "EUR" ? "€" : "$";
       return `<tr>
       <td><a class="tsym att-link" href="${esc(e.source_url)}" rel="noopener" title="원문 보고서 열기">${esc(e.symbol)}</a><span class="tname">${esc(e.issuer)}</span>${e.note ? `<span class="att-sub att-note">${esc(e.note)}</span>` : ""}</td>
@@ -2498,7 +2516,7 @@
         title="${esc(attDueTip(e))}">${e.days_since}일${attDueSub(e)}</td>
       <td class="num" title="${esc(num(e.reported_circulating) + (e.verify ? " — " + e.verify : ""))}">${cmp(e.reported_circulating)}${e.verified ? "" : (e.reported_circulating == null ? "" : "*")}${wonSub(toUsd(e.reported_circulating, e))}</td>
       <td class="num" title="${esc(num(e.current_circulating))} (DefiLlama)">${cmp(e.current_circulating)}${wonSub(toUsd(e.current_circulating, e))}</td>
-      <td class="num t-${e.drift_pct == null ? "unknown" : Math.abs(e.drift_pct) >= 8 ? "breach" : Math.abs(e.drift_pct) >= 3 ? "watch" : "sound"}">${e.drift_pct != null ? signed(e.drift_pct, 1, "%") : "—"}</td>
+      <td class="num t-${dg == null ? "unknown" : Math.abs(dg) >= 8 ? "breach" : Math.abs(dg) >= 3 ? "watch" : "sound"}" title="${esc(attDriftTip(e))}">${dg != null ? signed(dg, 1, "%") : "—"}${attGapSub(e)}</td>
       <td class="num"${e.reserves_total != null ? ` title="준비금 ${cur}${num(e.reserves_total)}"` : ""}>${ratio != null ? ratio.toFixed(2) + "%" : "—"}</td>
       <td><span class="pill is-${e.grade} t-${e.grade}"${why ? ` title="${why}"` : ""}>${GRADE_KO[e.grade] || e.grade}</span></td>
     </tr>`;
@@ -2521,13 +2539,15 @@
 
     const fresh = a.entries.filter((e) => e.days_since < e.watch_days).length;
     const stale = a.entries.filter((e) => e.days_since >= e.watch_days);
-    const big = a.entries.filter((e) => e.drift_pct != null && Math.abs(e.drift_pct) >= 8);
+    const big = a.entries.filter((e) => attDrift(e) != null && Math.abs(attDrift(e)) >= 8);
+    const gapped = a.entries.filter((e) => e.basis_gap_pct != null && Math.abs(e.basis_gap_pct) >= ((a.meta.thresholds && a.meta.thresholds.basis_gap_watch_pct) || 5));
     setLead("attest",
       (fresh === a.entries.length
         ? `준비금 보고서를 확인한 ${bold(a.entries.length + "종")} 모두 공표 주기 안의 최신 보고서입니다`
         : `준비금 보고서를 확인한 ${bold(a.entries.length + "종")} 가운데 ${bold(fresh + "종")}이 공표 주기 안의 최신 보고서입니다`)
       + (stale.length ? `, ${stale.map((e) => bold(e.symbol)).join("·")}는 다음 보고서가 발행사의 평소 공표 일정보다 늦어지고 있습니다` : "")
-      + (big.length ? `. 보고 이후 발행량이 8% 이상 달라진 종목은 ${big.map((e) => bold(e.symbol) + `(${signed(e.drift_pct, 1, "%")})`).join("·")}입니다.` : "."));
+      + (big.length ? `. 보고 이후 발행량이 8% 이상 달라진 종목은 ${big.map((e) => bold(e.symbol) + `(${signed(attDrift(e), 1, "%")})`).join("·")}입니다` : "")
+      + (gapped.length ? `. ${gapped.map((e) => bold(e.symbol) + `(집계 차이 ${signed(e.basis_gap_pct, 1, "%")})`).join("·")}는 보고서 기준일에 이미 원천(DefiLlama) 발행량이 보고서와 달라, 드리프트를 원천의 기준일 값과 비교해 냈습니다.` : "."));
     putSignals("attest", a.entries.filter((e) => e.days_since >= e.watch_days).map((e) => ({
       sev: e.days_since >= e.breach_days ? "breach" : "watch", tab: "attest", label: "어테스테이션",
       html: `${bold(e.symbol)} 준비금 보고서 ${e.overdue_days != null ? `예상일보다 ${bold(e.overdue_days + "일")} 늦음` : bold(e.days_since + "일") + " 경과"} <span class="sig-dim">· ${esc(e.cadence || "월간")} 공표 · 기준일 ${esc(e.as_of_date)}${e.next_due_date ? " · 다음 보고서 예상 " + esc(e.next_due_date) : ""}</span>`,
