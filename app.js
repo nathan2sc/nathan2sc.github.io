@@ -1622,7 +1622,45 @@
       setLead("freeze",
         `최근 ${days}일(${esc(chains.length === 1 ? chKo(chains[0]) : chains.map(chKo).join("·"))}) 동결 ${bold(t.freeze.toLocaleString() + "건")}, 잔액 소각 ${bold(t.seize.toLocaleString() + "건")}이 있었습니다.`
         + (topSeize && topSeize.seize && t.seize
-          ? ` 소각의 ${Math.round(topSeize.seize / t.seize * 100)}%는 ${esc(topSeize.issuer)}가 했습니다.` : ""));
+          ? ` 소각의 ${Math.round(topSeize.seize / t.seize * 100)}%는 ${esc(topSeize.issuer)}가 했습니다.` : "")
+        + (f.frozen_balance && f.frozen_balance.checked
+          ? ` 아직 동결된 주소의 현재 잔액은 ${bold("$" + usd(f.frozen_balance.total_units))}입니다${f.frozen_balance.coverage_pct < 99 ? `(${f.frozen_balance.coverage_pct}% 확인)` : ""}.` : ""));
+    }
+
+    // 아직 묶여 있는 금액 — 동결 주소의 현재 잔액(동결 이벤트에는 금액이 없어 직접 읽은 값)
+    const fbz = f.frozen_balance;
+    const bwrap = $("#fz-bal-wrap");
+    if (bwrap) {
+      const ok = !!(fbz && fbz.addresses);
+      bwrap.hidden = !ok;
+      if (ok) {
+        const rd = fbz.recent_days || 7;
+        const cov = fbz.coverage_pct != null ? fbz.coverage_pct : 0;
+        $("#fz-bal-recent-h").textContent = `최근 ${rd}일 동결분`;
+        $("#fz-bal-lead").innerHTML =
+          `조회 기간에 동결된 뒤 아직 풀리거나 소각되지 않은 주소 ${bold(fbz.addresses.toLocaleString() + "곳")} 가운데 `
+          + `${fbz.checked.toLocaleString()}곳의 잔액을 읽었고, 합계는 ${bold("$" + usd(fbz.total_units))}입니다.`
+          + (fbz.recent_units ? ` 최근 ${rd}일 동안 동결된 주소에 그중 $${usd(fbz.recent_units)}가 있습니다.` : "")
+          + (cov < 99 ? ` <span class="t-watch">아직 ${(fbz.addresses - fbz.checked).toLocaleString()}곳은 읽지 못해 합계에서 빠졌습니다(회차마다 이어 읽음).</span>` : "");
+        $("#fz-bal tbody").innerHTML = (fbz.symbols || []).map((r) => `<tr>
+          <td>${esc(r.issuer)} <span class="tname">${esc(r.symbol)}</span></td>
+          <td class="num fz-bal-v">${r.checked ? "$" + usd(r.units) : "—"}</td>
+          <td class="num">${r.recent_addresses ? "$" + usd(r.recent_units) + ` <span class="sig-dim">${r.recent_addresses.toLocaleString()}곳</span>` : `<span class="sig-dim">—</span>`}</td>
+          <td class="num">${r.addresses.toLocaleString()}</td>
+          <td class="num">${r.checked.toLocaleString()}${r.checked < r.addresses ? ` <span class="sig-dim">(${Math.round(r.checked / r.addresses * 100)}%)</span>` : ""}</td>
+        </tr>`).join("");
+        const shortA = (a) => (a && a.length > 12 ? a.slice(0, 8) + "…" + a.slice(-4) : a || "—");
+        const top = (fbz.top || []).slice(0, 5);
+        $("#fz-bal-top tbody").innerHTML = !top.length
+          ? `<tr class="empty-row"><td colspan="5">잔액이 남은 동결 주소가 아직 없습니다.</td></tr>`
+          : top.map((x) => `<tr>
+          <td>${new Date(x.frozen_at * 1000).toLocaleDateString("ko-KR", { year: "2-digit", month: "2-digit", day: "2-digit" })}</td>
+          <td>${esc(x.issuer)} <span class="tname">${esc(x.symbol)}</span></td>
+          <td class="num fz-bal-v">$${usd(x.units)}</td>
+          <td>${esc(chKo(x.chain))}</td>
+          <td class="fz-addr" title="${esc(x.addr)}">${esc(shortA(x.addr))}</td>
+        </tr>`).join("");
+      }
     }
 
     if (f.meta.notes && f.meta.notes.length) {
@@ -1710,6 +1748,7 @@
           <td>${esc(x.issuer)} <span class="tname">${esc(x.symbol)}</span></td>
           <td class="num" title="${what.replace(/<[^>]+>/g, "")}">${x.n.toLocaleString()}</td>
           <td class="num">${vs}</td>
+          <td class="num"${x.frozen_open ? ` title="그날 동결돼 아직 묶인 주소 ${x.frozen_open}곳 중 ${x.frozen_checked || 0}곳의 현재 잔액 합"` : ""}>${x.frozen_checked ? "$" + usd(x.frozen_units) : `<span class="sig-dim">—</span>`}</td>
           <td>${chs}</td>
           <td>${(x.joint || []).length ? `<span class="t-watch">${x.joint.map(esc).join("·")}</span>` : `<span class="sig-dim">—</span>`}</td>
         </tr>`;
@@ -1729,7 +1768,7 @@
       <td>${esc(chKo(e.chain || "Ethereum"))}</td>
       <td class="kind-${e.kind}">${KIND_KO[e.kind]}</td>
       <td class="fz-addr">${short(e.addr)}</td>
-      <td class="num">${e.units ? usd(e.units) : "—"}</td>
+      <td class="num">${e.units ? usd(e.units) : e.bal != null ? `<span title="동결 주소의 현재 잔액">$${usd(e.bal)}</span>` : "—"}</td>
     </tr>`).join("");
   }
 

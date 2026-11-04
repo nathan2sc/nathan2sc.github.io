@@ -1225,6 +1225,10 @@ html[data-theme="dark"] .ex:not(.ex--empty),html[data-theme="dark"] .ex-img{back
 
 /* 동결 — 집중 조치일 */
 .fz-spike-panel{margin-top:1.2rem}
+/* 동결 — 아직 묶여 있는 금액(동결 주소 현재 잔액) */
+.fz-bal-panel{margin:0 0 1.6rem}
+.fz-bal-sub{font-size:.86rem;font-weight:600;margin:1rem 0 .3rem}
+.fz-bal-v{font-weight:600}
 .fz-spike-lead{color:var(--mid);font-size:.86rem;margin:.2rem 0 .8rem;max-width:62rem}
 .fz-tick.spike{width:5px;height:22px;opacity:1}
 .fz-guide li{margin-bottom:.55rem}

@@ -390,6 +390,31 @@
     <div class="fig"><p class="fig-k">소각 규모</p><p class="fig-v" id="fz-amount">—</p><p class="fig-s">토큰 단위 합계</p></div>
   </div>
 
+  <div class="panel fz-bal-panel" id="fz-bal-wrap" hidden>
+    <h3>아직 묶여 있는 금액</h3>
+    <p class="fz-spike-lead" id="fz-bal-lead"></p>
+    <div class="tablewrap tw-inner">
+      <table id="fz-bal">
+        <thead><tr>
+          <th scope="col">종목</th><th scope="col" class="num">현재 잔액</th><th scope="col" class="num" id="fz-bal-recent-h">최근 7일 동결분</th>
+          <th scope="col" class="num">동결 중인 주소</th><th scope="col" class="num">잔액 확인</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <h4 class="fz-bal-sub">잔액이 큰 동결 주소</h4>
+    <div class="tablewrap tw-inner">
+      <table id="fz-bal-top">
+        <thead><tr>
+          <th scope="col">동결일</th><th scope="col">종목</th><th scope="col" class="num">현재 잔액</th>
+          <th scope="col">체인</th><th scope="col">주소</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="foot" id="fz-bal-rule">동결 이벤트에는 금액이 없어서, 동결된 주소의 지금 잔액(balanceOf)을 직접 읽어 ‘묶여 있는 금액’을 어림합니다. 동결된 주소는 토큰을 내보낼 수 없으므로 이 잔액이 묶인 금액에 가깝습니다. 다만 동결 <strong>당시</strong> 금액이 아니라 <strong>지금</strong> 잔액입니다 — 테더(USDT) 동결 주소는 입금은 받을 수 있어 늘 수 있고, 발행사가 소각하면 0 이 됩니다(소각은 따로 셉니다). 조회 기간 안에 동결되고 그 뒤 해제·소각되지 않은 주소만 셉니다. 토큰 1개를 1달러로 봅니다.</p>
+  </div>
+
   <div class="ghead fz-head" aria-hidden="true">
     <span>발행사</span><span class="fz-axis" id="fz-axis"></span><span class="gunit">건수</span>
   </div>
@@ -417,7 +442,7 @@
       <table id="fz-spikes">
         <thead><tr>
           <th scope="col">일자</th><th scope="col">종목</th><th scope="col" class="num">건수</th>
-          <th scope="col" class="num">평소 대비</th><th scope="col">체인</th><th scope="col">같은 날</th>
+          <th scope="col" class="num">평소 대비</th><th scope="col" class="num" title="그날 동결돼 아직 묶여 있는 주소의 현재 잔액 합">묶인 잔액</th><th scope="col">체인</th><th scope="col">같은 날</th>
         </tr></thead>
         <tbody></tbody>
       </table>
@@ -432,7 +457,7 @@
         <table id="fz-tbl">
           <thead><tr>
             <th scope="col">일자</th><th scope="col">발행사</th><th scope="col">체인</th><th scope="col">조치</th>
-            <th scope="col">대상 주소</th><th scope="col" class="num">규모</th>
+            <th scope="col">대상 주소</th><th scope="col" class="num" title="소각은 소각액, 동결은 그 주소의 현재 잔액">규모</th>
           </tr></thead>
           <tbody></tbody>
         </table>
@@ -447,7 +472,7 @@
         <li><strong>급증한 날은 뉴스와 같이 보세요.</strong> 아래 ‘집중 조치일’이 대부분 한 사건의 일괄 조치입니다. 여러 발행사가 같은 날 몰렸다면 공동 대응일 수 있습니다.</li>
         <li><strong>해제 비율은 절차의 흔적입니다.</strong> 동결 뒤 풀린 비율로, 오인 동결 정정·조사 종결·합의 같은 사후 절차가 작동하는지 간접적으로 보여 줍니다. 건수가 적은 줄은 비율을 해석하지 않습니다.</li>
         <li><strong>규제 관점.</strong> 미국 GENIUS Act 처럼 발행사에 적법한 명령에 따른 동결·압수 능력을 요구하는 흐름이 있습니다. 이 기록은 그 권한이 실제로 얼마나·어떻게 쓰이는지 보여 줍니다.</li>
-        <li><strong>한계.</strong> 동결은 발행사가 단독으로 실행하며 사법 판단이 먼저 있었는지는 온체인에서 알 수 없습니다. 동결 금액은 기록되지 않고(소각만 금액 있음), 이 사이트는 발행사가 등재한 주소를 집계할 뿐 특정인을 추적하지 않습니다.</li>
+        <li><strong>한계.</strong> 동결은 발행사가 단독으로 실행하며 사법 판단이 먼저 있었는지는 온체인에서 알 수 없습니다. 동결 이벤트에는 금액이 없어 위 ‘아직 묶여 있는 금액’은 동결 주소의 현재 잔액으로 어림한 값입니다(동결 당시 금액과 다를 수 있음). 이 사이트는 발행사가 등재한 주소를 집계할 뿐 특정인을 추적하지 않습니다.</li>
       </ul>
       <p class="foot" id="fz-notes"></p>
     </div>
