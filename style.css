@@ -1154,6 +1154,7 @@ html[data-theme="dark"] .range-btn[aria-pressed="true"]{background:var(--rule)}
 .ex--warn{box-shadow:0 0 0 2px var(--watch)}
 .ex--warn .ex-mk{color:var(--watch);box-shadow:0 0 0 1px var(--watch)}
 .ex--stale{opacity:.45}
+.ex--halt{opacity:.4;box-shadow:0 0 0 1px var(--mid);filter:grayscale(1)}
 .ex--lg{width:32px;height:32px;border-radius:8px}
 .ex--lg .ex-mono{border-radius:8px;font-size:.9rem}
 .ex--lg .ex-img{width:30px;height:30px;border-radius:7px}

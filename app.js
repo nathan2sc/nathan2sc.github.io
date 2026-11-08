@@ -1826,7 +1826,9 @@
     const pmFx = $("#pm-fx");
     pmFx.textContent = `USD/KRW ${p.meta.fx_usdkrw.toLocaleString()}`
       + (p.meta.fx_basis === "live" ? (p.meta.fx_live_kind === "naver" ? " (하나은행 고시)" : " (시장 환율)")
-        : p.meta.fx_basis === "ecb" ? " (ECB 기준율)" : "");
+        : p.meta.fx_basis === "ecb" ? " (ECB 기준율)" : "")
+      // 업비트 시세가 막힌 회차는 빗썸 가격으로 대신 계산한다(etl/fetch_premium.py domestic_ticker).
+      + (p.meta.krw_source && !/^Upbit/.test(p.meta.krw_source) ? " · 국내 가격 빗썸(업비트 접속 실패로 대체)" : "");
     const usdtA = (p.assets || []).find((a) => a.asset === "USDT");
     if (p.meta.fx_usdkrw_ecb && p.meta.fx_basis === "live") {
       pmFx.title = `${p.meta.fx_source}\nECB 기준율 ${p.meta.fx_usdkrw_ecb.toLocaleString()}원`
@@ -2029,10 +2031,19 @@
     renderKvFacts();
 
     const s = k.summary || {};
-    const fails = Object.entries(k.meta.status || {}).flatMap(([ex, st]) =>
-      Object.entries(st).filter(([, v]) => v !== "ok").map(([a]) => `${KV.exName[ex] || ex} ${a}`));
+    // 직전 값으로 이어 쓴 쌍(carried)과 아예 빠진 쌍을 나눠 적는다.
+    const carried = (k.meta.carried || []);
+    const carriedKey = new Set(carried.map((c) => `${c.exchange}:${c.asset}`));
+    // 거래 중단 거래소(etl/kr_exchanges.json service_halt)는 '수집 실패'가 아니라 중단으로 적는다.
+    const haltedEx = (k.meta.exchanges || []).filter((e) => e.service_halt);
+    const haltedId = new Set(haltedEx.map((e) => e.id));
+    const halted = haltedEx.map((e) => `${e.name}(${String(e.service_halt.since || "").slice(5, 10)}~)`);
+    const fails = Object.entries(k.meta.status || {}).filter(([ex]) => !haltedId.has(ex)).flatMap(([ex, st]) =>
+      Object.entries(st).filter(([a, v]) => v !== "ok" && !carriedKey.has(`${ex}:${a}`)).map(([a]) => `${KV.exName[ex] || ex} ${a}`));
     $("#kv-foot").textContent = `출처: ${k.meta.source} · 갱신 ${fmtTime(k.meta.generated_at)}`
-      + (fails.length ? ` · 이번 수집 실패: ${fails.join(", ")}(해당 거래소가 빠진 날은 표시하지 않음)` : "")
+      + (carried.length ? ` · 이번 수집 실패, 직전 값으로 이어 계산: ${carried.map((c) => `${KV.exName[c.exchange] || c.exchange} ${c.asset}(${c.last_date}까지)`).join(", ")} — 그 뒤 날짜는 다시 받을 때 채웁니다` : "")
+      + (fails.length ? ` · 이번 수집 실패: ${fails.join(", ")}(업비트·빗썸·코인원 중 하나라도 빠진 날은 표시하지 않음)` : "")
+      + (halted.length ? ` · ${halted.join("·")}: 거래 중단 중이라 중단 뒤 거래대금이 없습니다` : "")
       + ". 디지털엑스(옛 코빗)·고팍스는 일봉에 원화 거래대금이 없어 거래량 × 종가로 어림했고, 고팍스 일봉은 한국시간 오전 9시 기준입니다. 진행 중인 오늘은 제외합니다.";
     if (s.avg30_krw) {
       const usdAmt = s.avg30_krw / (KV.fx || 1350); // 문장용 어림(기준환율) — 정확한 값은 카드 수치
@@ -2944,12 +2955,16 @@
   const EX = {}; // id → 거래소 메타(이름·아이콘·머리글자·색)
   function exBadge(e, v, cls = "") {
     const mk = v ? v.markets.map((m) => MK_SHORT[m] || m[0]).join("") : "";
-    const tip = v ? `${e.name} · ${v.markets.map((m) => MK_KO[m] || m).join("·")} 마켓${v.warning ? " · 투자유의" : ""}${v.stale ? " · 이번 수집 실패, 직전 값" : ""}` : e.name;
-    return `<span class="ex${v && v.warning ? " ex--warn" : ""}${v && v.stale ? " ex--stale" : ""}${cls}" title="${esc(tip)}" role="listitem" aria-label="${esc(tip)}">
+    const halt = v && (v.halted || (v.stale && e.service_halt));
+    const tip = v ? `${e.name} · ${v.markets.map((m) => MK_KO[m] || m).join("·")} 마켓${v.warning ? " · 투자유의" : ""}${
+      halt ? ` · 거래 중단 중(${haltSince(e)}~, 중단 전 목록)` : v.stale ? " · 이번 수집 실패, 직전 값" : ""}` : e.name;
+    return `<span class="ex${v && v.warning ? " ex--warn" : ""}${v && v.stale ? " ex--stale" : ""}${halt ? " ex--halt" : ""}${cls}" title="${esc(tip)}" role="listitem" aria-label="${esc(tip)}">
       <span class="ex-mono" style="--exc:${esc(e.color || "#475569")}" aria-hidden="true">${esc(e.short || e.name[0])}</span>${
       e.icon ? `<img class="ex-img" src="${esc(e.icon)}" alt="" width="22" height="22" loading="lazy" decoding="async">` : ""}${
       mk ? `<i class="ex-mk" aria-hidden="true">${esc(mk)}</i>` : ""}</span>`;
   }
+  // 거래소가 매매를 멈춘 경우(etl/kr_exchanges.json service_halt, 출처 있음) 시작일 'MM-DD'.
+  const haltSince = (e) => (e && e.service_halt && e.service_halt.since ? e.service_halt.since.slice(5, 10) : "");
   function krLogos(sym) {
     if (!LISTINGS) return "";
     const k = krOf(sym);
@@ -3013,7 +3028,7 @@
       return `<li class="ex-sum-i${e.status !== "ok" ? " is-fail" : ""}">
         ${exBadge(e, null, " ex--lg")}
         <span class="ex-sum-t"><b>${esc(e.name)}</b>
-          <span class="ex-sum-n">${mine.length}종${mine.length ? ` · 원화마켓 ${krw}종` : ""}${e.status !== "ok" ? " · 이번 수집 실패(직전 값)" : ""}</span></span>
+          <span class="ex-sum-n">${mine.length}종${mine.length ? ` · 원화마켓 ${krw}종` : ""}${e.service_halt ? ` · <b class="t-watch">거래 중단(${esc(haltSince(e))}~)</b>` : e.status !== "ok" ? " · 이번 수집 실패(직전 값)" : ""}</span></span>
       </li>`;
     }).join("");
 
@@ -3027,10 +3042,13 @@
       : "");
 
     const okEx = exs.filter((e) => e.status === "ok");
-    const fails = exs.filter((e) => e.status !== "ok").map((e) => e.name);
+    const haltEx = exs.filter((e) => e.service_halt);
+    const fails = exs.filter((e) => e.status !== "ok" && !e.service_halt).map((e) => e.name);
     $("#kr-basis").textContent =
       `출처: ${exs.map((e) => e.name).join("·")} 공개 마켓 목록(${okEx.length}/${exs.length}곳 수집) · 기준 ${fmtTime(L.meta.generated_at)}`
       + (fails.length ? ` · 수집 실패: ${fails.join("·")} — 직전 값 표시` : "")
+      + haltEx.map((e) => ` · ${e.name}: ${e.service_halt.since.slice(0, 10)}부터 ${e.service_halt.scope || "거래 중단"}`
+        + `(재개 ${e.service_halt.resume || "미정"}, 확인 ${e.service_halt.checked || "-"}) — 중단 전 거래지원 목록을 흐리게 표시`).join("")
       + ". 거래소 티커와 심볼이 같으면 같은 종목으로 봅니다(동명 티커는 다른 토큰일 수 있음). 시작·종료일은 이 수집이 처음 확인한 날로, 거래소 공지일과 다를 수 있습니다.";
 
     const ev = (L.events || []).slice(0, 12);
@@ -3055,6 +3073,9 @@
     if (nL) sig.push({ sev: "info", tab: "issuance", target: "kr-sec", label: "국내 거래지원 시작",
       html: `최근 7일 국내 거래지원 시작 ${bold(nL + "건")} — ${recent.filter((e) => e.kind === "listed").slice(0, 3)
         .map((e) => esc(`${EX_NAME[e.exchange] || e.exchange} ${e.symbol}`)).join(", ")}` });
+    haltEx.forEach((e) => sig.push({ sev: "watch", tab: "issuance", target: "kr-sec", label: "국내 거래소 거래 중단",
+      html: `${esc(e.name)} 매매·출금 중단 ${bold(haltSince(e) + "~")} — 재개 ${esc(e.service_halt.resume || "미정")}`
+        + `${(e.service_halt.sources || [])[0] ? ` <span class="sig-dim">· 출처 ${esc(e.service_halt.sources[0].name)}</span>` : ""}` }));
     putSignals("listings", sig);
   }
 
