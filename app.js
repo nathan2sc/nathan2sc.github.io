@@ -281,7 +281,8 @@
     const watchN = d.totals.watch_count || 0;
     if (watchN) {
       sig.push({ sev: "watch", tab: "issuance", target: "h-table", filter: "alert", label: "주의 종목",
-        html: `${bold("주의 " + watchN + "종")} <span class="sig-dim">— 페그 편차 또는 30일 상환·가격 품질이 관측선을 넘음</span>` });
+        // 앞의 심각도 표지가 이미 '주의'라서 본문에는 '주의'를 되풀이하지 않는다(2026-11-11, '주의 주의 18종' 표기).
+        html: `관측선을 넘은 종목 ${bold(watchN + "종")} <span class="sig-dim">— 페그 편차 또는 30일 상환·가격 품질</span>` });
     }
     if (c.hhi_issuer >= m.thresholds.hhi_concentrated) {
       const top = (d.assets || [])[0];
