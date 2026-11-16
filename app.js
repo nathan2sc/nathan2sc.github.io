@@ -254,6 +254,13 @@
       sig.push({ sev: "info", tab: "issuance", target: "h-table", label: "원천 갱신 정지",
         html: `원천 값이 멈춘 종목 ${bold(names)}${uniq.length > 3 ? ` 등 ${uniq.length}종` : ""} <span class="sig-dim">— 멈춘 발행량·48시간 넘은 가격은 증감률·등급에서 뺌</span>` });
     }
+    // 종목 하나의 원천 단절(집계 방식 변경 등) — 그 종목만 증감률·상환 등급에서 뺐다.
+    const sbs = (d.source_breaks && d.source_breaks.items) || [];
+    if (sbs.length) {
+      const sus = sbs.filter((x) => x.kind === "suspected");
+      sig.push({ sev: sus.length ? "watch" : "info", tab: "issuance", target: "h-struct", label: "원천 집계 단절",
+        html: `원천 집계가 끊긴 종목 ${bold(sbs.slice(0, 3).map((x) => x.symbol).join(", "))}${sbs.length > 3 ? " 등" : ""} <span class="sig-dim">— ${sus.length ? "집계 변경인지 확인 필요, " : "집계 방식 변경(출처 확인), "}끊긴 구간의 증감률·상환 등급은 뺌</span>` });
+    }
     // 원천 목록에서 통째로 사라진 대형 종목 — 총 발행잔액이 줄어 보이는 이유를 밝힌다.
     const dr = d.source_dropped || {};
     if ((dr.items || []).length) {
@@ -1546,7 +1553,12 @@
       : a.price_stale_h != null ? "페그 편차: 최근 48시간 안의 시장 가격이 없어 잴 수 없음"
       : "페그 편차: 시장 가격이 없어 잴 수 없음";
     const st = a.supply_stale;
-    const red = st
+    const sb = a.source_break;
+    const sbOff = sb && (sb.excluded || []).includes("chg_30d");
+    const red = sbOff
+      ? `30일 발행량: 원천(DefiLlama) ${sb.kind === "confirmed" ? "집계 방식 변경(출처 확인)" : "집계 단절 의심(체인 몫 급감)"} — ${fmtDay(sb.since)} 앞뒤 값을 비교하면 실제 상환이 아닌데도 크게 준 것처럼 보여 증감률·상환 등급에서 뺌`
+        + (sb.chg_30d_raw != null ? `(원래 계산값 ${pc(sb.chg_30d_raw)})` : "")
+      : st
       ? `30일 발행량: 원천(DefiLlama) 갱신 정지 의심 — 이 사이트가 ${fmtDay(st.since)}부터 관측한 발행량이 그대로인데 원천은 하루 새 ${st.chg_1d_raw > 0 ? "+" : "−"}${Math.abs(st.chg_1d_raw).toLocaleString("en-US", { maximumFractionDigits: 1 })}%로 표시해 증감률을 쓰지 않음`
       : a.chg_30d != null
       ? `30일 발행량 ${pc(a.chg_30d)} — 주의 ${t.redemption_watch}% · 경보 ${t.redemption_breach}% 이하`
@@ -1558,7 +1570,9 @@
       why.push(`30일 순감(상환)이 ${a.grade_redemption === "breach" ? "경보" : "주의"}선을 넘음`);
     if (a.price_quality === "degraded")
       why.push(`가격 출처끼리 ${a.price_spread_bp != null ? a.price_spread_bp + "bp" : ""} 어긋나 관측 신뢰도가 낮음(주의로 표시)`);
-    const head = a.grade === "unknown" ? (st || a.price_stale_h != null ? "미측정 — 원천 값(발행량·가격)이 멈춰 있어 판단할 수 없음"
+    const head = sbOff && a.grade !== "breach" && a.grade !== "watch"
+      ? `${a.grade === "sound" ? "정상(페그 기준)" : "미측정"} — 원천 집계가 ${fmtDay(sb.since)}에 끊겨 30일 발행량 기준은 판단하지 않음`
+      : a.grade === "unknown" ? (st || a.price_stale_h != null ? "미측정 — 원천 값(발행량·가격)이 멈춰 있어 판단할 수 없음"
         : "미측정 — 가격과 30일 전 수량이 모두 없어 판단할 수 없음")
       : a.grade === "sound" ? "정상 — 두 기준 모두 주의선 안쪽"
       : `${GRADE_KO[a.grade]} — ${why.join(", ") || "기준 초과"}`;
@@ -3200,6 +3214,15 @@
       const list = dr.items.map((x) => `${x.symbol}($${usd(x.last_mcap_usd)}${x.yield_bearing ? ", 이자부" : ""})`).join(", ");
       drEl.textContent = `원천(DefiLlama) 목록에서 최근 7일 안에 통째로 빠진 종목: ${list}. 합계 $${usd(dr.usd)}만큼 총 발행잔액이 줄어 보입니다. 원천의 분류 변경인지 일시 누락인지 확인되지 않아 값을 채워 넣지 않았습니다.`;
       drEl.hidden = false;
+    }
+    const sbx = (snap.source_breaks && snap.source_breaks.items) || [], sbEl = $("#mech-breaks");
+    if (sbEl && sbx.length) {
+      sbEl.textContent = "원천 집계가 끊긴 종목: " + sbx.map((x) => `${x.symbol}(${fmtDay(x.since)}부터, `
+        + `${x.kind === "confirmed" ? "집계 방식 변경 — 출처 확인" : "체인 몫 급감 — 변경·누락 여부 확인 중"})`).join(", ")
+        + ". 끊긴 앞뒤 값을 비교한 1·7·30일 증감률은 실제 발행·상환이 아니어서 단절 뒤 2·8·31일 동안 증감률과 상환 등급에서 뺍니다. "
+        + "나머지 종목과 합계는 정상 게시합니다.";
+      sbEl.title = sbx.map((x) => `${x.symbol}: ${x.reason || ""}`).join("\n");
+      sbEl.hidden = false;
     }
     renderCrosscheck(snap);
     const pc = snap.peg_candidates, pcEl = $("#cur-candidates");
