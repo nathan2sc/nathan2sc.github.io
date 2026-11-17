@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-13",
+  "updated": "2026-11-18",
   "kinds": {
     "onchain": "온체인 — 블록체인 원장에 기록된 값",
     "onchain-agg": "온체인(집계사 경유) — 원장 값을 집계 서비스가 모아 준 것",
@@ -114,7 +114,7 @@
         "publicrpc",
         "trongrid"
       ],
-      "method": "총액은 CoinGecko 스테이블코인 분류 시가총액과 비교합니다. 단위 오류가 의심되는 종목은 체인마다 공개 노드에 직접 질의(eth_call totalSupply·Solana getTokenSupply)해 원천 수량과의 배율을 봅니다.",
+      "method": "총액은 CoinGecko 스테이블코인 분류 시가총액과 비교합니다. 단위 오류가 의심되는 종목과, 원천 숫자가 급변했을 때 실제 소각인지 집계 변경인지 가려야 하는 종목(2026-11-18 FRAX 추가)은 체인마다 공개 노드에 직접 질의(eth_call totalSupply·Solana getTokenSupply)해 원천 수량과의 배율을 봅니다.",
       "limits": [
         "설정 파일에 넣은 종목만 컨트랙트로 확인합니다(전 종목 아님).",
         "totalSupply 는 발행된 토큰 수라 발행사가 보관 중인 물량까지 포함될 수 있습니다.",
