@@ -2322,9 +2322,16 @@
     const symOf = (e) => dupName(e) ? `${e.symbol}(${e.name})` : e.symbol;
     const dur = (h) => h == null ? "—" : h >= 48 ? (h / 24).toFixed(1) + "일" : h + "시간";
     // 이탈 중 발행잔액 변화(시작 → 마지막 관측). 5% 넘게 움직였을 때만 — 이탈한 채 빠져나가면 상환 압력(2026-10-28)
+    // 사건 도중 원천 집계가 바뀐 종목(source_break, 2026-11-20 FRAX)은 단절 뒤 첫 관측부터만 잰다 — 시작과 비교하면 집계 변경이 상환처럼 보인다
     const supplyChg = (e) => {
-      if (!(e.start_mcap_usd > 0) || !(e.last_mcap_usd > 0)) return "";
-      const c = e.last_mcap_usd / e.start_mcap_usd - 1;
+      const sb = e.source_break;
+      const base = sb && sb.base_mcap_usd > 0 ? sb.base_mcap_usd : e.start_mcap_usd;
+      if (!(base > 0) || !(e.last_mcap_usd > 0)) return sb ? `<span class="att-sub" title="${esc("원천 집계 방식이 " + dt(sb.since) + " 바뀌어 사건 시작 때 발행잔액과 비교하지 않습니다")}">원천 집계 변경(${esc(dt(sb.since))})</span>` : "";
+      const c = e.last_mcap_usd / base - 1;
+      if (sb) {
+        const raw = e.start_mcap_usd > 0 ? " · 사건 시작 $" + usd(e.start_mcap_usd) + " 과 비교한 값(" + signed((e.last_mcap_usd / e.start_mcap_usd - 1) * 100, 0, "%") + ")은 집계 변경이 섞여 쓰지 않음" : "";
+        return `<span class="att-sub" title="${esc("원천 집계 방식 변경 " + dt(sb.since) + (sb.kind === "confirmed" ? "(출처 확인)" : "(의심)") + " · 변경 뒤 첫 관측 $" + usd(base) + " → 마지막 관측 $" + usd(e.last_mcap_usd) + raw)}">원천 집계 변경(${esc(dt(sb.since))})${Math.abs(c) >= 0.05 ? " · 이후 발행 " + signed(c * 100, 0, "%") : ""}</span>`;
+      }
       if (Math.abs(c) < 0.05) return "";
       return `<span class="att-sub" title="${esc("사건 시작 발행잔액 $" + usd(e.start_mcap_usd) + " → 마지막 관측 $" + usd(e.last_mcap_usd))}">이탈 중 발행 ${signed(c * 100, 0, "%")}</span>`;
     };
@@ -2356,7 +2363,7 @@
     setLead("dp", `진행 중인 이탈 ${bold((d.open || []).length + "건")}`
       + ((d.open || []).length ? ` — ${(d.open || []).slice(0, 3).map((e) => bold(symOf(e)) + `(최대 ${signed(e.peak_bp, 0, "bp")}, ${dur(e.duration_h)})`).join("·")}` : "")
       + `. ${since ? since + " 이후 " : ""}두 회차 이상 이어진 100bp 넘는 사건은 ${bold(big.length + "건")}입니다.`);
-    $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 과거 기록은 저장소에 남은 회차별 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외, 2026-10-28 이어 보기 규칙)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. '이탈 중 발행'은 사건 시작 때보다 발행잔액이 얼마나 줄거나 늘었는지(5% 이상만)입니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
+    $("#dp-note").textContent = ((d.meta && d.meta.rule) || "") + ". 과거 기록은 저장소에 남은 회차별 스냅숏을 지금 규칙(이자부 상품·액면 계상·오래된 가격 제외, 2026-10-28 이어 보기 규칙)으로 다시 재생해 만든 것이라, 당시 화면 판정과 다를 수 있습니다. '이탈 중 발행'은 사건 시작 때보다 발행잔액이 얼마나 줄거나 늘었는지(5% 이상만)입니다. 사건 도중 원천 집계 방식이 바뀐 종목은 '원천 집계 변경'으로 표시하고 변경 뒤 첫 관측부터만 잽니다. 기본으로는 두 회차 이상 이어졌거나 100bp 넘은 사건만 보입니다.";
   }
 
   // ── 이번 주 요약 ──────────────────────────────────────────
