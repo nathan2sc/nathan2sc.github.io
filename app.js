@@ -3007,6 +3007,8 @@
     }
     const pctTxt = a.share_pct == null ? "비중 —" : a.share_pct >= 10 ? a.share_pct.toFixed(0) + "%"
       : a.share_pct >= 0.1 ? a.share_pct.toFixed(1) + "%" : a.share_pct > 0 ? "<0.1%" : "0%";
+    // 시세를 못 받은 거래소(거래 중단 거래소 제외) — 합계가 실제보다 작다는 표시(2026-11-23 추가)
+    const miss = (a.missing || []).map((ex) => EX_NAME[ex] || ex).join("·");
     const by = Object.entries(a.by || {}).sort((x, y) => y[1] - x[1])
       .map(([ex, v]) => `${EX_NAME[ex] || ex} ${krwWon(v)}`).join(" · ");
     const tip = `국내 원화마켓 24시간 거래대금 ${krwWon(a.krw_24h)}`
@@ -3014,8 +3016,9 @@
       + `\n전 세계 24시간 거래대금 ${a.global_usd_24h != null ? "$" + usd(a.global_usd_24h) + " (CoinGecko)" : "— (CoinGecko 값 없음)"}`
       + (a.share_pct != null ? `\n국내 비중 ${a.share_pct}%` : "")
       + (by ? `\n거래소별: ${by}` : "")
+      + (miss ? `\n이번 회차에 ${miss} 시세를 받지 못해 합계에서 빠졌습니다. 실제 국내 거래대금·비중은 이보다 큽니다.` : "")
       + "\n전 세계 값은 이 종목이 들어간 모든 거래쌍 합계라, 결제 통화로 많이 쓰이는 USDT·USDC 는 비중이 작게 나옵니다. 보유량이 아니라 거래 회전량입니다.";
-    return `<span class="kr-share" tabindex="0" data-tip="${esc(tip)}">24h ${krwWon(a.krw_24h)} · ${pctTxt}</span>`;
+    return `<span class="kr-share" tabindex="0" data-tip="${esc(tip)}">24h ${krwWon(a.krw_24h)} · ${pctTxt}${miss ? " (일부 거래소 빠짐)" : ""}</span>`;
   }
   // 아이콘 사본을 못 읽으면 머리글자 배지가 드러나게 이미지만 숨긴다(error 는 버블링하지 않아 캡처로 받는다).
   document.addEventListener("error", (ev) => {
