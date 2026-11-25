@@ -1176,7 +1176,8 @@ html[data-theme="dark"] .range-btn[aria-pressed="true"]{background:var(--rule)}
 .kr-ev-d{font-family:var(--mono);color:var(--mid);font-size:.78rem;flex:none}
 .kr-ev-k{flex:none;font-size:.72rem;border:1px solid currentColor;padding:0 .35rem}
 .kr-ev--listed .kr-ev-k{color:var(--sound)}
-.kr-ev--delisted .kr-ev-k{color:var(--watch)}
+.kr-ev--delisted .kr-ev-k,.kr-ev--warning .kr-ev-k{color:var(--watch)}
+.kr-ev--warning_lifted .kr-ev-k{color:var(--mid)}
 html[data-theme="dark"] .ex:not(.ex--empty),html[data-theme="dark"] .ex-img{background:#fff}
 @media (max-width:900px){
   .ex-sum{grid-template-columns:repeat(2,minmax(0,1fr))}

@@ -2974,16 +2974,25 @@
   // 오른쪽 위 작은 글자 = 마켓(원=KRW, B=BTC, T=USDT).
   const MK_SHORT = { KRW: "원", BTC: "B", USDT: "T" };
   const MK_KO = { KRW: "원화", BTC: "BTC", USDT: "USDT" };
+  const EV_KO = { listed: "시작", delisted: "종료", warning: "유의 지정", warning_lifted: "유의 해제" };
   const EX = {}; // id → 거래소 메타(이름·아이콘·머리글자·색)
   function exBadge(e, v, cls = "") {
     const mk = v ? v.markets.map((m) => MK_SHORT[m] || m[0]).join("") : "";
     const halt = v && (v.halted || (v.stale && e.service_halt));
     const tip = v ? `${e.name} · ${v.markets.map((m) => MK_KO[m] || m).join("·")} 마켓${v.warning ? " · 투자유의" : ""}${
-      halt ? ` · 거래 중단 중(${haltSince(e)}~, 중단 전 목록)` : v.stale ? " · 이번 수집 실패, 직전 값" : ""}` : e.name;
+      halt ? ` · 거래 중단 중(${haltSince(e)}~, 중단 전 목록)` : v.stale ? " · 이번 수집 실패, 직전 값" : ""}${desigTxt(v.designation)}` : e.name;
     return `<span class="ex${v && v.warning ? " ex--warn" : ""}${v && v.stale ? " ex--stale" : ""}${halt ? " ex--halt" : ""}${cls}" title="${esc(tip)}" role="listitem" aria-label="${esc(tip)}">
       <span class="ex-mono" style="--exc:${esc(e.color || "#475569")}" aria-hidden="true">${esc(e.short || e.name[0])}</span>${
       e.icon ? `<img class="ex-img" src="${esc(e.icon)}" alt="" width="22" height="22" loading="lazy" decoding="async">` : ""}${
       mk ? `<i class="ex-mk" aria-hidden="true">${esc(mk)}</i>` : ""}</span>`;
+  }
+  // 거래소 공지로 확인한 유의종목 지정(etl/kr_exchanges.json designations) — 말풍선 설명.
+  function desigTxt(d) {
+    if (!d) return "";
+    return `\n${d.kind || "유의종목"} 지정 ${String(d.since || "").slice(0, 10)}${d.deposit_halted ? " · 입금 중단" : ""}`
+      + (d.review_until ? ` · 검토 ~${d.review_until.slice(5)}${d.review_note ? `(${d.review_note})` : ""}` : "")
+      + (d.reason ? `\n사유: ${d.reason}` : "")
+      + (d.source ? `\n출처: ${d.source}${d.basis ? ` — ${d.basis}` : ""}` : "");
   }
   // 거래소가 매매를 멈춘 경우(etl/kr_exchanges.json service_halt, 출처 있음) 시작일 'MM-DD'.
   const haltSince = (e) => (e && e.service_halt && e.service_halt.since ? e.service_halt.since.slice(5, 10) : "");
@@ -3011,14 +3020,37 @@
     const miss = (a.missing || []).map((ex) => EX_NAME[ex] || ex).join("·");
     const by = Object.entries(a.by || {}).sort((x, y) => y[1] - x[1])
       .map(([ex, v]) => `${EX_NAME[ex] || ex} ${krwWon(v)}`).join(" · ");
+    // 원화 가격이 같은 회차 USDT 원화 가격(해외 가격 보정)에서 벗어난 정도 — 그 종목만의 국내 가격 이탈(2026-11-25 추가)
+    const rel = a.rel_usdt_pct, rg = a.rel_grade;
+    const relTxt = rel != null && (rg === "watch" || rg === "breach")
+      ? ` · <b class="t-${rg}">원화 가격 USDT 대비 ${rel > 0 ? "+" : ""}${Math.abs(rel) >= 100 ? rel.toFixed(0) : rel.toFixed(1)}%</b>` : "";
     const tip = `국내 원화마켓 24시간 거래대금 ${krwWon(a.krw_24h)}`
-      + (a.usd_24h != null ? ` (약 $${usd(a.usd_24h)})` : "")
+      + (a.usd_24h != null ? ` (약 $${usd(a.usd_24h)}${a.usd_basis === "qty" ? " — 거래 수량 × 해외 가격" : " — 원화 ÷ 기준환율"})` : "")
+      + (a.usd_basis === "qty" && a.usd_24h_fx != null && a.usd_24h && a.usd_24h_fx > a.usd_24h * 1.2
+        ? `\n원화 ÷ 기준환율로 바꾸면 $${usd(a.usd_24h_fx)} — 국내 가격이 해외보다 높아 부풀려진 값이라 쓰지 않습니다.` : "")
+      + (a.price_krw != null ? `\n원화 가격 ${a.price_krw.toLocaleString("ko-KR")}원(${EX_NAME[a.price_ex] || a.price_ex}, 거래대금 가장 큰 곳)`
+        + (rel != null ? ` · USDT 원화 가격 대비 ${rel > 0 ? "+" : ""}${rel}%` : "") : "")
       + `\n전 세계 24시간 거래대금 ${a.global_usd_24h != null ? "$" + usd(a.global_usd_24h) + " (CoinGecko)" : "— (CoinGecko 값 없음)"}`
       + (a.share_pct != null ? `\n국내 비중 ${a.share_pct}%` : "")
       + (by ? `\n거래소별: ${by}` : "")
       + (miss ? `\n이번 회차에 ${miss} 시세를 받지 못해 합계에서 빠졌습니다. 실제 국내 거래대금·비중은 이보다 큽니다.` : "")
       + "\n전 세계 값은 이 종목이 들어간 모든 거래쌍 합계라, 결제 통화로 많이 쓰이는 USDT·USDC 는 비중이 작게 나옵니다. 보유량이 아니라 거래 회전량입니다.";
-    return `<span class="kr-share" tabindex="0" data-tip="${esc(tip)}">24h ${krwWon(a.krw_24h)} · ${pctTxt}${miss ? " (일부 거래소 빠짐)" : ""}</span>`;
+    return `<span class="kr-share" tabindex="0" data-tip="${esc(tip)}">24h ${krwWon(a.krw_24h)} · ${pctTxt}${miss ? " (일부 거래소 빠짐)" : ""}${relTxt}</span>`;
+  }
+  // 국내 원화 가격 이탈 신호: USDT 대비 괴리가 관측선(etl/thresholds.json premium.relative_*)을 넘은 종목
+  function krPriceSignals() {
+    if (!KRW_SHARE || !KRW_SHARE.assets) return;
+    const thr = KRW_SHARE.rel_thresholds_pct || {};
+    const warned = (sym) => { const k = krOf(sym); return !!(k && Object.values(k.exchanges).some((v) => v.warning)); };
+    const hit = Object.entries(KRW_SHARE.assets)
+      .filter(([sym, a]) => (a.rel_grade === "watch" || a.rel_grade === "breach") && !warned(sym))  // 유의종목은 위 신호에 합침
+      .sort((x, y) => Math.abs(y[1].rel_usdt_pct) - Math.abs(x[1].rel_usdt_pct));
+    const sig = hit.slice(0, 2).map(([sym, a]) => ({
+      sev: a.rel_grade, tab: "issuance", target: "h-table", label: "국내 원화 가격 이탈",
+      html: `${esc(sym)} 국내 원화 가격이 USDT 대비 ${bold((a.rel_usdt_pct > 0 ? "+" : "") + a.rel_usdt_pct.toFixed(Math.abs(a.rel_usdt_pct) >= 100 ? 0 : 1) + "%")}`
+        + ` — ${esc(EX_NAME[a.price_ex] || a.price_ex || "")} ${a.price_krw != null ? esc(a.price_krw.toLocaleString("ko-KR")) + "원" : ""}`
+        + ` <span class="sig-dim">· 관측선 ${thr.watch ?? "-"}%/${thr.breach ?? "-"}%</span>` }));
+    putSignals("krprice", sig);
   }
   // 아이콘 사본을 못 읽으면 머리글자 배지가 드러나게 이미지만 숨긴다(error 는 버블링하지 않아 캡처로 받는다).
   document.addEventListener("error", (ev) => {
@@ -3081,8 +3113,10 @@
     if (ev.length) {
       $("#kr-events").innerHTML = ev.map((e) => `<li class="kr-ev kr-ev--${e.kind}">
         <span class="kr-ev-d">${esc(e.date)}</span>
-        <span class="kr-ev-k">${e.kind === "listed" ? "시작" : "종료"}</span>
-        <span>${esc(EX_NAME[e.exchange] || e.exchange)} <b class="tsym">${esc(e.symbol)}</b> ${esc(MK_KO[e.market] || e.market)} 마켓</span>
+        <span class="kr-ev-k">${esc(EV_KO[e.kind] || e.kind)}</span>
+        <span>${esc(EX_NAME[e.exchange] || e.exchange)} <b class="tsym">${esc(e.symbol)}</b> ${e.kind && e.kind.startsWith("warning")
+          ? esc(e.label || "유의종목") + (e.basis ? ` <span class="sig-dim">(${esc(e.basis)})</span>` : "")
+          : esc(MK_KO[e.market] || e.market) + " 마켓"}</span>
       </li>`).join("");
       evWrap.hidden = false;
     } else evWrap.hidden = true;
@@ -3090,10 +3124,27 @@
 
     const since = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
     const recent = (L.events || []).filter((e) => e.date >= since);
-    const nL = recent.filter((e) => e.kind === "listed").length, nD = recent.length - nL;
+    const nL = recent.filter((e) => e.kind === "listed").length, nD = recent.filter((e) => e.kind === "delisted").length;
     const sig = [];
+    // 지금 유의종목으로 지정된 종목(거래소 공지·API 경고) — 종목별로 묶어 한 줄
+    const warnBy = {};
+    syms.forEach((sym) => Object.entries(L.assets[sym].exchanges).forEach(([id, v]) => {
+      if (v.warning) (warnBy[sym] = warnBy[sym] || []).push([id, v]);
+    }));
+    Object.entries(warnBy).forEach(([sym, list]) => {
+      const d = (list.find(([, v]) => v.designation) || [])[1];
+      const dg = d && d.designation;
+      // 같은 종목의 국내 원화 가격 이탈(USDT 대비)이 관측선을 넘었으면 한 줄에 합친다(신호 칸 5개 절약)
+      const px = KRW_SHARE && KRW_SHARE.assets && KRW_SHARE.assets[sym];
+      const pxHit = px && (px.rel_grade === "watch" || px.rel_grade === "breach");
+      sig.push({ sev: pxHit && px.rel_grade === "breach" ? "breach" : "watch", tab: "issuance", target: "kr-sec", label: "국내 유의종목 지정",
+        html: `${esc((mcapOf[sym] || {}).symbol || sym)} 국내 유의종목 — ${list.map(([id]) => esc(EX_NAME[id] || id)).join("·")}`
+          + (dg ? ` ${bold(String(dg.since || "").slice(5, 10) + "~")}${dg.deposit_halted ? " · 입금 중단" : ""}${dg.review_until ? ` · 검토 ~${esc(dg.review_until.slice(5))}` : ""}` : "")
+          + (pxHit ? ` · 원화 가격 USDT 대비 ${bold((px.rel_usdt_pct > 0 ? "+" : "") + px.rel_usdt_pct.toFixed(Math.abs(px.rel_usdt_pct) >= 100 ? 0 : 1) + "%")}` : "")
+          + (dg && dg.source ? ` <span class="sig-dim">· 출처 ${esc(dg.source.split(" — ")[0])}</span>` : "") });
+    });
     if (nD) sig.push({ sev: "watch", tab: "issuance", target: "kr-sec", label: "국내 거래지원 종료",
-      html: `최근 7일 국내 거래지원 종료 ${bold(nD + "건")} — ${recent.filter((e) => e.kind !== "listed").slice(0, 3)
+      html: `최근 7일 국내 거래지원 종료 ${bold(nD + "건")} — ${recent.filter((e) => e.kind === "delisted").slice(0, 3)
         .map((e) => esc(`${EX_NAME[e.exchange] || e.exchange} ${e.symbol}`)).join(", ")}` });
     if (nL) sig.push({ sev: "info", tab: "issuance", target: "kr-sec", label: "국내 거래지원 시작",
       html: `최근 7일 국내 거래지원 시작 ${bold(nL + "건")} — ${recent.filter((e) => e.kind === "listed").slice(0, 3)
@@ -3102,6 +3153,7 @@
       html: `${esc(e.name)} 매매·출금 중단 ${bold(haltSince(e) + "~")} — 재개 ${esc(e.service_halt.resume || "미정")}`
         + `${(e.service_halt.sources || [])[0] ? ` <span class="sig-dim">· 출처 ${esc(e.service_halt.sources[0].name)}</span>` : ""}` }));
     putSignals("listings", sig);
+    krPriceSignals();
   }
 
   // ── 설명 말풍선 ─────────────────────────────────────────
